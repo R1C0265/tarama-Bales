@@ -1,4 +1,4 @@
-package com.application.views.feed;
+package com.application.views.updates;
 
 import com.application.views.MainLayout;
 import com.vaadin.flow.component.grid.Grid;
@@ -18,14 +18,14 @@ import jakarta.annotation.security.PermitAll;
 import java.util.Arrays;
 import java.util.List;
 
-@PageTitle("Feed")
-@Route(value = "feed", layout = MainLayout.class)
+@PageTitle("Updates")
+@Route(value = "updates", layout = MainLayout.class)
 @PermitAll
-public class FeedView extends Div implements AfterNavigationObserver {
+public class UpdatesView extends Div implements AfterNavigationObserver {
 
     Grid<Person> grid = new Grid<>();
 
-    public FeedView() {
+    public UpdatesView() {
         addClassName("feed-view");
         setSizeFull();
         grid.setHeight("100%");

@@ -9,12 +9,10 @@ import com.application.data.User;
 import com.application.security.AuthenticatedUser;
 import com.application.views.allbails.AllBailsView;
 import com.application.views.allusers.AllUsersView;
-import com.application.views.budget.BudgetView;
-import com.application.views.feed.FeedView;
-import com.application.views.gridwithfilters.GridwithFiltersView;
 import com.application.views.home.HomeView;
 import com.application.views.sales.SalesView;
 import com.application.views.takeaways.TakeawaysView;
+import com.application.views.updates.UpdatesView;
 import com.vaadin.flow.component.applayout.AppLayout;
 import com.vaadin.flow.component.applayout.DrawerToggle;
 import com.vaadin.flow.component.avatar.Avatar;
@@ -81,32 +79,24 @@ public class MainLayout extends AppLayout {
 
         }
         if (accessChecker.hasAccess(AllBailsView.class)) {
-            nav.addItem(new SideNavItem("All Bails", AllBailsView.class, LineAwesomeIcon.COLUMNS_SOLID.create()));
+            nav.addItem(new SideNavItem("All Bails", AllBailsView.class, LineAwesomeIcon.TSHIRT_SOLID.create()));
 
         }
-    
-        if (accessChecker.hasAccess(GridwithFiltersView.class)) {
-            nav.addItem(new SideNavItem("Grid with Filters", GridwithFiltersView.class,
-                    LineAwesomeIcon.ADJUST_SOLID.create()));
 
-        }
         if (accessChecker.hasAccess(SalesView.class)) {
-            nav.addItem(new SideNavItem("Sales", SalesView.class, LineAwesomeIcon.COLUMNS_SOLID.create()));
+            nav.addItem(new SideNavItem("Sales", SalesView.class, LineAwesomeIcon.CASH_REGISTER_SOLID.create()));
 
         }
         if (accessChecker.hasAccess(AllUsersView.class)) {
-            nav.addItem(new SideNavItem("All Users", AllUsersView.class, LineAwesomeIcon.COLUMNS_SOLID.create()));
+            nav.addItem(new SideNavItem("All Users", AllUsersView.class, LineAwesomeIcon.USERS_SOLID.create()));
 
         }
         
-        if (accessChecker.hasAccess(FeedView.class)) {
-            nav.addItem(new SideNavItem("Feed", FeedView.class, LineAwesomeIcon.LIST_SOLID.create()));
+        if (accessChecker.hasAccess(UpdatesView.class)) {
+            nav.addItem(new SideNavItem("Updates", UpdatesView.class, LineAwesomeIcon.LIST_SOLID.create()));
 
         }
-        if (accessChecker.hasAccess(BudgetView.class)) {
-            nav.addItem(new SideNavItem("Budget", BudgetView.class, LineAwesomeIcon.PENCIL_RULER_SOLID.create()));
 
-        }
         if (accessChecker.hasAccess(TakeawaysView.class)) {
             nav.addItem(new SideNavItem("Takeaways", TakeawaysView.class, LineAwesomeIcon.PENCIL_RULER_SOLID.create()));
 

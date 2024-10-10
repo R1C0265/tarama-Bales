@@ -1,5 +1,11 @@
 package com.application.views.sales;
 
+import java.util.Optional;
+import java.util.UUID;
+
+import org.springframework.data.domain.PageRequest;
+import org.springframework.orm.ObjectOptimisticLockingFailureException;
+
 import com.application.data.Purchase;
 import com.application.services.PurchaseService;
 import com.application.views.MainLayout;
@@ -9,6 +15,7 @@ import com.vaadin.collaborationengine.UserInfo;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
+import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.datepicker.DatePicker;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.grid.Grid;
@@ -27,11 +34,8 @@ import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.spring.data.VaadinSpringDataHelpers;
+
 import jakarta.annotation.security.PermitAll;
-import java.util.Optional;
-import java.util.UUID;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.orm.ObjectOptimisticLockingFailureException;
 
 @PageTitle("Sales")
 @Route(value = "sales/:purchaseID?/:action?(edit)", layout = MainLayout.class)
@@ -47,6 +51,7 @@ public class SalesView extends Div implements BeforeEnterObserver {
 
     private TextField bailName;
     private TextField amounOfItems;
+    private ComboBox<String> bailCategory;
     private TextField price;
     private DatePicker purchaseDate;
 
@@ -169,9 +174,20 @@ public class SalesView extends Div implements BeforeEnterObserver {
         FormLayout formLayout = new FormLayout();
         bailName = new TextField("Bail Name");
         amounOfItems = new TextField("Amoun Of Items");
+        bailCategory = new ComboBox<>("Select Option");
+        bailCategory.setItems("Dresses", "Kid's Dresses", "Boy's Cargo Pants");
+
+        // Step 3: Optional - Add a placeholder or value change listener
+        bailCategory.setPlaceholder("Choose an option...");
+
+        bailCategory.addValueChangeListener(event -> {
+            String selected = event.getValue();
+            // Handle the value change
+            System.out.println("Selected: " + selected);
+        });
         price = new TextField("Price");
         purchaseDate = new DatePicker("Purchase Date");
-        formLayout.add(bailName, amounOfItems, price, purchaseDate);
+        formLayout.add(bailName, bailCategory, amounOfItems, price, purchaseDate);
 
         editorDiv.add(avatarGroup, formLayout);
         createButtonLayout(editorLayoutDiv);

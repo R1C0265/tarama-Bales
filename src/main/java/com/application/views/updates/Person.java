@@ -1,4 +1,4 @@
-package com.application.views.feed;
+package com.application.views.updates;
 
 public class Person {
 

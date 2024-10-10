@@ -1,4 +1,4 @@
-package com.application.views.about;
+package com.application.views.home;
 
 import com.application.views.MainLayout;
 import com.vaadin.flow.component.html.H2;
@@ -8,14 +8,15 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.theme.lumo.LumoUtility.Margin;
+
 import jakarta.annotation.security.RolesAllowed;
 
-@PageTitle("About")
-@Route(value = "about", layout = MainLayout.class)
+@PageTitle("Home")
+@Route(value = "", layout = MainLayout.class)
 @RolesAllowed("USER")
-public class AboutView extends VerticalLayout {
+public class HomeView extends VerticalLayout {
 
-    public AboutView() {
+    public HomeView() {
         setSpacing(false);
 
         Image img = new Image("images/empty-plant.png", "placeholder plant");

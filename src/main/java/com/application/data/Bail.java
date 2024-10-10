@@ -1,7 +1,8 @@
 package com.application.data;
 
-import jakarta.persistence.Entity;
 import java.time.LocalDate;
+
+import jakarta.persistence.Entity;
 
 @Entity
 public class Bail extends AbstractEntity {

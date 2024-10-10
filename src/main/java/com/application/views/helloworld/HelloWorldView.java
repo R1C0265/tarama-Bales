@@ -10,9 +10,9 @@ import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.auth.AnonymousAllowed;
 
-@PageTitle("Hello World")
-@Route(value = "", layout = MainLayout.class)
-@AnonymousAllowed
+// @PageTitle("Hello World")
+// @Route(value = "", layout = MainLayout.class)
+// @AnonymousAllowed
 public class HelloWorldView extends HorizontalLayout {
 
     private TextField name;

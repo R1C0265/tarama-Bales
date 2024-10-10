@@ -1,15 +1,18 @@
 package com.application.views;
 
+import java.io.ByteArrayInputStream;
+import java.util.Optional;
+
+import org.vaadin.lineawesome.LineAwesomeIcon;
+
 import com.application.data.User;
 import com.application.security.AuthenticatedUser;
-import com.application.views.about.AboutView;
-import com.application.views.about2.About2View;
 import com.application.views.allbails.AllBailsView;
 import com.application.views.allusers.AllUsersView;
 import com.application.views.budget.BudgetView;
 import com.application.views.feed.FeedView;
 import com.application.views.gridwithfilters.GridwithFiltersView;
-import com.application.views.helloworld.HelloWorldView;
+import com.application.views.home.HomeView;
 import com.application.views.sales.SalesView;
 import com.application.views.takeaways.TakeawaysView;
 import com.vaadin.flow.component.applayout.AppLayout;
@@ -31,9 +34,6 @@ import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.server.StreamResource;
 import com.vaadin.flow.server.auth.AccessAnnotationChecker;
 import com.vaadin.flow.theme.lumo.LumoUtility;
-import java.io.ByteArrayInputStream;
-import java.util.Optional;
-import org.vaadin.lineawesome.LineAwesomeIcon;
 
 /**
  * The main view is a top-level placeholder for other views.
@@ -76,19 +76,15 @@ public class MainLayout extends AppLayout {
 
     private SideNav createNavigation() {
         SideNav nav = new SideNav();
-
-        if (accessChecker.hasAccess(HelloWorldView.class)) {
-            nav.addItem(new SideNavItem("Hello World", HelloWorldView.class, LineAwesomeIcon.GLOBE_SOLID.create()));
-
-        }
-        if (accessChecker.hasAccess(AboutView.class)) {
-            nav.addItem(new SideNavItem("About", AboutView.class, LineAwesomeIcon.FILE.create()));
+        if (accessChecker.hasAccess(HomeView.class)) {
+            nav.addItem(new SideNavItem("Home", HomeView.class,LineAwesomeIcon.HOME_SOLID.create()));
 
         }
-        if (accessChecker.hasAccess(About2View.class)) {
-            nav.addItem(new SideNavItem("About2", About2View.class, LineAwesomeIcon.FILE.create()));
+        if (accessChecker.hasAccess(AllBailsView.class)) {
+            nav.addItem(new SideNavItem("All Bails", AllBailsView.class, LineAwesomeIcon.COLUMNS_SOLID.create()));
 
         }
+    
         if (accessChecker.hasAccess(GridwithFiltersView.class)) {
             nav.addItem(new SideNavItem("Grid with Filters", GridwithFiltersView.class,
                     LineAwesomeIcon.ADJUST_SOLID.create()));
@@ -102,10 +98,7 @@ public class MainLayout extends AppLayout {
             nav.addItem(new SideNavItem("All Users", AllUsersView.class, LineAwesomeIcon.COLUMNS_SOLID.create()));
 
         }
-        if (accessChecker.hasAccess(AllBailsView.class)) {
-            nav.addItem(new SideNavItem("All Bails", AllBailsView.class, LineAwesomeIcon.COLUMNS_SOLID.create()));
-
-        }
+        
         if (accessChecker.hasAccess(FeedView.class)) {
             nav.addItem(new SideNavItem("Feed", FeedView.class, LineAwesomeIcon.LIST_SOLID.create()));
 

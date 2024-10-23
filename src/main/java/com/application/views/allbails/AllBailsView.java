@@ -1,5 +1,10 @@
 package com.application.views.allbails;
 
+import java.util.Optional;
+
+import org.springframework.data.domain.PageRequest;
+import org.springframework.orm.ObjectOptimisticLockingFailureException;
+
 import com.application.data.Bail;
 import com.application.services.BailService;
 import com.application.views.MainLayout;
@@ -25,10 +30,8 @@ import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.spring.data.VaadinSpringDataHelpers;
+
 import jakarta.annotation.security.RolesAllowed;
-import java.util.Optional;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.orm.ObjectOptimisticLockingFailureException;
 
 @PageTitle("All Bails")
 @Route(value = "all-bails/:bailID?/:action?(edit)", layout = MainLayout.class)
@@ -47,6 +50,7 @@ public class AllBailsView extends Div implements BeforeEnterObserver {
 
     private final Button cancel = new Button("Cancel");
     private final Button save = new Button("Save");
+    private final Button delete = new Button("Delete");
 
     private final BeanValidationBinder<Bail> binder;
 
@@ -99,6 +103,12 @@ public class AllBailsView extends Div implements BeforeEnterObserver {
 
         cancel.addClickListener(e -> {
             clearForm();
+            refreshGrid();
+        });
+
+
+        delete.addClickListener(e->{
+            delete();
             refreshGrid();
         });
 
@@ -168,7 +178,8 @@ public class AllBailsView extends Div implements BeforeEnterObserver {
         buttonLayout.setClassName("button-layout");
         cancel.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
         save.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
-        buttonLayout.add(save, cancel);
+        delete.addThemeVariants(ButtonVariant.LUMO_ERROR);
+        buttonLayout.add(save, cancel, delete);
         editorLayoutDiv.add(buttonLayout);
     }
 
@@ -182,6 +193,10 @@ public class AllBailsView extends Div implements BeforeEnterObserver {
     private void refreshGrid() {
         grid.select(null);
         grid.getDataProvider().refreshAll();
+    }
+
+    private void delete() {
+        bailService.delete(bail.getId());
     }
 
     private void clearForm() {

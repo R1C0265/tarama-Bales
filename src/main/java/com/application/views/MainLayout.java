@@ -11,7 +11,6 @@ import com.application.views.allbails.AllBailsView;
 import com.application.views.allusers.AllUsersView;
 import com.application.views.home.HomeView;
 import com.application.views.sales.SalesView;
-import com.application.views.takeaways.TakeawaysView;
 import com.application.views.updates.UpdatesView;
 import com.vaadin.flow.component.applayout.AppLayout;
 import com.vaadin.flow.component.applayout.DrawerToggle;
@@ -96,11 +95,7 @@ public class MainLayout extends AppLayout {
             nav.addItem(new SideNavItem("Updates", UpdatesView.class, LineAwesomeIcon.LIST_SOLID.create()));
 
         }
-
-        if (accessChecker.hasAccess(TakeawaysView.class)) {
-            nav.addItem(new SideNavItem("Takeaways", TakeawaysView.class, LineAwesomeIcon.PENCIL_RULER_SOLID.create()));
-
-        }
+        
 
         return nav;
     }

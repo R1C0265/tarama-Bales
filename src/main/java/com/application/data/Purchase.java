@@ -6,11 +6,32 @@ import java.time.LocalDate;
 @Entity
 public class Purchase extends AbstractEntity {
 
+    private String customerName;
+    private String cashier;
+
     private String bailName;
     private Integer amounOfItems;
     private Integer price;
-    private LocalDate purchaseDate;
+    private LocalDate purchaseDate; 
 
+
+
+    
+    public String getCustomerName() {
+        return this.customerName;
+    }
+
+    public void setCustomerName(String customerName) {
+        this.customerName = customerName;
+    }
+
+    public String getCashier() {
+        return this.cashier;
+    }
+
+    public void setCashier(String cashier) {
+        this.cashier = cashier;
+    }
     public String getBailName() {
         return bailName;
     }

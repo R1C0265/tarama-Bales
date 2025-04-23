@@ -50,6 +50,7 @@ public class SalesView extends Div implements BeforeEnterObserver {
 
     CollaborationAvatarGroup avatarGroup;
 
+    private TextField customerName;
     private TextField bailName;
     private TextField amounOfItems;
     private ComboBox<String> bailCategory;
@@ -91,9 +92,11 @@ public class SalesView extends Div implements BeforeEnterObserver {
         add(splitLayout);
 
         // Configure Grid
+        grid.addColumn("customerName").setAutoWidth(true);
         grid.addColumn("bailName").setAutoWidth(true);
         grid.addColumn("amounOfItems").setAutoWidth(true);
         grid.addColumn("price").setAutoWidth(true);
+        grid.addColumn("cashier").setAutoWidth(true);
         grid.addColumn("purchaseDate").setAutoWidth(true);
         grid.setItems(query -> purchaseService.list(
                 PageRequest.of(query.getPage(), query.getPageSize(), VaadinSpringDataHelpers.toSpringDataSort(query)))
@@ -120,6 +123,7 @@ public class SalesView extends Div implements BeforeEnterObserver {
                 .bind("amounOfItems");
         binder.forField(price, String.class).withConverter(new StringToIntegerConverter("Only numbers are allowed"))
                 .bind("price");
+
 
         binder.bindInstanceFields(this);
 
@@ -195,7 +199,7 @@ public class SalesView extends Div implements BeforeEnterObserver {
         editorLayoutDiv.add(editorDiv);
 
         FormLayout formLayout = new FormLayout();
-        bailName = new TextField("Customer Name");
+        customerName = new TextField("Customer Name");
         amounOfItems = new TextField("Amount Of Items");
         bailCategory = new ComboBox<String>("Select Bail");
         bailCategory.setItems(bailService.getBailName());
@@ -210,7 +214,7 @@ public class SalesView extends Div implements BeforeEnterObserver {
         });
         price = new TextField("Price");
         purchaseDate = new DatePicker("Purchase Date");
-        formLayout.add(bailName, bailCategory, amounOfItems, price, purchaseDate);
+        formLayout.add(customerName, bailCategory, amounOfItems, price, purchaseDate);
 
         editorDiv.add(avatarGroup, formLayout);
         createButtonLayout(editorLayoutDiv);

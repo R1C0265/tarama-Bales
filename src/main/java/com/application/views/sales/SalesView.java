@@ -7,6 +7,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
 
 import com.application.data.Purchase;
+import com.application.services.BailService;
 import com.application.services.PurchaseService;
 import com.application.views.MainLayout;
 import com.vaadin.collaborationengine.CollaborationAvatarGroup;
@@ -57,15 +58,17 @@ public class SalesView extends Div implements BeforeEnterObserver {
 
     private final Button cancel = new Button("Cancel");
     private final Button save = new Button("Save");
-
+    private final Button delete = new Button("Delete");
     private final CollaborationBinder<Purchase> binder;
 
     private Purchase purchase;
 
     private final PurchaseService purchaseService;
+    private final BailService bailService;
 
-    public SalesView(PurchaseService purchaseService) {
+    public SalesView(PurchaseService purchaseService, BailService bailService) {
         this.purchaseService = purchaseService;
+        this.bailService = bailService;
         addClassNames("sales-view");
 
         // UserInfo is used by Collaboration Engine and is used to share details
@@ -112,7 +115,9 @@ public class SalesView extends Div implements BeforeEnterObserver {
 
         // Bind fields. This is where you'd define e.g. validation rules
         binder.forField(amounOfItems, String.class)
-                .withConverter(new StringToIntegerConverter("Only numbers are allowed")).bind("amounOfItems");
+                .withConverter(new StringToIntegerConverter("Only numbers are allowed"))
+                .withValidator(amount -> amount > 0, "Amount must be greater than 0")
+                .bind("amounOfItems");
         binder.forField(price, String.class).withConverter(new StringToIntegerConverter("Only numbers are allowed"))
                 .bind("price");
 
@@ -123,12 +128,20 @@ public class SalesView extends Div implements BeforeEnterObserver {
             refreshGrid();
         });
 
+
         save.addClickListener(e -> {
             try {
                 if (this.purchase == null) {
                     this.purchase = new Purchase();
                 }
                 binder.writeBean(this.purchase);
+
+                //Processing Sale Transaction
+                String selectedBailName = bailCategory.getValue();
+                int itemsSold = Integer.parseInt(amounOfItems.getValue());
+                bailService.processSale(selectedBailName, itemsSold);
+                
+                // Save Purchase
                 purchaseService.update(this.purchase);
                 clearForm();
                 refreshGrid();
@@ -142,6 +155,16 @@ public class SalesView extends Div implements BeforeEnterObserver {
             } catch (ValidationException validationException) {
                 Notification.show("Failed to update the data. Check again that all values are valid");
             }
+        });
+
+        delete.addClickListener(e ->{
+            if (this.purchase != null) {
+                purchaseService.delete(this.purchase.getId());
+            }
+            clearForm();
+            refreshGrid();
+            Notification.show("Data deleted");
+            UI.getCurrent().navigate(SalesView.class);
         });
     }
 
@@ -175,7 +198,7 @@ public class SalesView extends Div implements BeforeEnterObserver {
         bailName = new TextField("Bail Name");
         amounOfItems = new TextField("Amoun Of Items");
         bailCategory = new ComboBox<>("Select Option");
-        bailCategory.setItems("Dresses", "Kid's Dresses", "Boy's Cargo Pants");
+        bailCategory.setItems(bailService.getBailName());
 
         // Step 3: Optional - Add a placeholder or value change listener
         bailCategory.setPlaceholder("Choose an option...");
@@ -200,7 +223,8 @@ public class SalesView extends Div implements BeforeEnterObserver {
         buttonLayout.setClassName("button-layout");
         cancel.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
         save.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
-        buttonLayout.add(save, cancel);
+        delete.addThemeVariants(ButtonVariant.LUMO_ERROR);
+        buttonLayout.add(save, cancel, delete);
         editorLayoutDiv.add(buttonLayout);
     }
 

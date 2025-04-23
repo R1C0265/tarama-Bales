@@ -1,5 +1,6 @@
 package com.application.services;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.domain.Page;
@@ -9,6 +10,8 @@ import org.springframework.stereotype.Service;
 
 import com.application.data.Bail;
 import com.application.data.BailRepository;
+
+import jakarta.transaction.Transactional;
 
 @Service
 public class BailService {
@@ -23,10 +26,17 @@ public class BailService {
         return repository.findById(id);
     }
 
+    public Bail getBails(Bail entity){
+        return repository.findById(entity.getId()).orElseThrow(() -> new RuntimeException("Bail not found"));
+    }
+
     public Bail update(Bail entity) {
         return repository.save(entity);
     }
 
+    public List<String> getBailName() {
+        return repository.findAllBailNames();
+    }
     public void delete(Long id) {
         repository.deleteById(id);
     }
@@ -43,4 +53,15 @@ public class BailService {
         return (int) repository.count();
     }
 
+
+    @Transactional
+    public void processSale(String bailName, int itemsSold) {
+        Bail bail = repository.findByBailName(bailName)
+                .orElseThrow(() -> new RuntimeException("Bail not found"));
+        if(bail.getAmounOfItems() < itemsSold) {
+            throw new RuntimeException("Not enough items in stock");
+        }
+        bail.setAmounOfItems(bail.getAmounOfItems() - itemsSold);
+        repository.save(bail);
+    }
 }

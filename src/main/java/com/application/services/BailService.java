@@ -7,7 +7,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
-
 import com.application.data.Bail;
 import com.application.data.BailGrade;
 import com.application.data.BailRepository;
@@ -74,7 +73,7 @@ public class BailService {
         Bail bail = repository.findById(bailId)
                 .orElseThrow(() -> new RuntimeException("Bail not found"));
         grade.setBail(bail);
-        bail.getGrades().add(grade);
+        // bail.getGrades().add(grade);
         repository.save(bail);
     }
 }

@@ -9,6 +9,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import com.application.data.Bail;
+import com.application.data.BailGrade;
 import com.application.data.BailRepository;
 
 import jakarta.transaction.Transactional;
@@ -53,6 +54,9 @@ public class BailService {
         return (int) repository.count();
     }
 
+    public List<Bail> listAllBails() {
+        return repository.findAll();
+    }
 
     @Transactional
     public void processSale(String bailName, int itemsSold) {
@@ -62,6 +66,15 @@ public class BailService {
             throw new RuntimeException("Not enough items in stock");
         }
         bail.setAmounOfItems(bail.getAmounOfItems() - itemsSold);
+        repository.save(bail);
+    }
+
+    @Transactional
+    public void addGradeToBail(Long bailId, BailGrade grade) {
+        Bail bail = repository.findById(bailId)
+                .orElseThrow(() -> new RuntimeException("Bail not found"));
+        grade.setBail(bail);
+        bail.getGrades().add(grade);
         repository.save(bail);
     }
 }

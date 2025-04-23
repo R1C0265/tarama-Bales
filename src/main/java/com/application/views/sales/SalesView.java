@@ -195,9 +195,9 @@ public class SalesView extends Div implements BeforeEnterObserver {
         editorLayoutDiv.add(editorDiv);
 
         FormLayout formLayout = new FormLayout();
-        bailName = new TextField("Bail Name");
-        amounOfItems = new TextField("Amoun Of Items");
-        bailCategory = new ComboBox<>("Select Option");
+        bailName = new TextField("Customer Name");
+        amounOfItems = new TextField("Amount Of Items");
+        bailCategory = new ComboBox<String>("Select Bail");
         bailCategory.setItems(bailService.getBailName());
 
         // Step 3: Optional - Add a placeholder or value change listener

@@ -21,6 +21,7 @@ import com.vaadin.flow.component.datepicker.DatePicker;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridVariant;
+import com.vaadin.flow.component.grid.contextmenu.GridContextMenu;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.notification.Notification.Position;
@@ -38,6 +39,16 @@ import com.vaadin.flow.spring.data.VaadinSpringDataHelpers;
 
 import jakarta.annotation.security.PermitAll;
 
+
+/* 
+TODO's:
+1. Table must be editable. either each click different function or a tab appears for choosing options
+2. editing should be fixed or disabled for now
+3. Fix how bail name will be represented
+4.add cashier name for recordedby\
+
+5.add page to edit the bail details(subBail grades and SHtuff)
+6. Fix updates to be updating in real time(update deletion of anything, update insertion of anything in any table) */
 @PageTitle("Sales")
 @Route(value = "sales/:purchaseID?/:action?(edit)", layout = MainLayout.class)
 @PermitAll
@@ -103,9 +114,13 @@ public class SalesView extends Div implements BeforeEnterObserver {
                 .stream());
         grid.addThemeVariants(GridVariant.LUMO_NO_BORDER);
 
+        // Add context menu
+        configureGridContextMenu();
+
         // when a row is selected or deselected, populate form
         grid.asSingleSelect().addValueChangeListener(event -> {
             if (event.getValue() != null) {
+                save.setEnabled(false);
                 UI.getCurrent().navigate(String.format(PURCHASE_EDIT_ROUTE_TEMPLATE, event.getValue().getId()));
             } else {
                 clearForm();
@@ -260,5 +275,32 @@ public class SalesView extends Div implements BeforeEnterObserver {
         binder.setTopic(topic, () -> this.purchase);
         avatarGroup.setTopic(topic);
 
+    }
+
+    private void configureGridContextMenu() {
+        GridContextMenu<Purchase> contextMenu = new GridContextMenu<>(grid);
+
+        // Add "Edit" option
+        contextMenu.addItem("Edit", event -> {
+            event.getItem().ifPresent(purchase -> {
+                // Handle the "Edit" action
+                UI.getCurrent().navigate(String.format(PURCHASE_EDIT_ROUTE_TEMPLATE, purchase.getId()));
+            });
+        });
+
+        // Add "Details" option
+        contextMenu.addItem("Details", event -> {
+            event.getItem().ifPresent(purchase -> {
+                // Handle the "Details" action
+                UI.getCurrent().navigate("details/" + purchase.getId());
+            });
+        });
+
+        // Optional: Add a listener for when no row is selected
+        contextMenu.addOpenedChangeListener(event -> {
+            if (!event.isOpened()) {
+                Notification.show("Right-click on a row to see options", 3000, Notification.Position.BOTTOM_START);
+            }
+        });
     }
 }

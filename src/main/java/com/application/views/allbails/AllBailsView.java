@@ -1,10 +1,8 @@
 package com.application.views.allbails;
 
 import java.util.Optional;
-
 import org.springframework.data.domain.PageRequest;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
-
 import com.application.data.Bail;
 import com.application.services.BailService;
 import com.application.views.MainLayout;
@@ -15,6 +13,7 @@ import com.vaadin.flow.component.datepicker.DatePicker;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridVariant;
+import com.vaadin.flow.component.grid.contextmenu.GridContextMenu;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.notification.Notification.Position;
@@ -80,6 +79,9 @@ public class AllBailsView extends Div implements BeforeEnterObserver {
                 .stream());
         grid.addThemeVariants(GridVariant.LUMO_NO_BORDER);
 
+        // Add context menu
+        configureGridContextMenu();
+
         // when a row is selected or deselected, populate form
         grid.asSingleSelect().addValueChangeListener(event -> {
             if (event.getValue() != null) {
@@ -106,8 +108,7 @@ public class AllBailsView extends Div implements BeforeEnterObserver {
             refreshGrid();
         });
 
-
-        delete.addClickListener(e->{
+        delete.addClickListener(e -> {
             delete();
             refreshGrid();
         });
@@ -207,5 +208,32 @@ public class AllBailsView extends Div implements BeforeEnterObserver {
         this.bail = value;
         binder.readBean(this.bail);
 
+    }
+
+    private void configureGridContextMenu() {
+        GridContextMenu<Bail> contextMenu = new GridContextMenu<>(grid);
+
+        // Add "Edit" option
+        contextMenu.addItem("Edit", event -> {
+            event.getItem().ifPresent(bail -> {
+                // Handle the "Edit" action
+                UI.getCurrent().navigate(String.format(BAIL_EDIT_ROUTE_TEMPLATE, bail.getId()));
+            });
+        });
+
+        // Add "Details" option
+        contextMenu.addItem("Details", event -> {
+            event.getItem().ifPresent(bail -> {
+                // Handle the "Details" action
+                UI.getCurrent().navigate("bail-details/" + bail.getId());
+            });
+        });
+
+        // Optional: Add a listener for when no row is selected
+        contextMenu.addOpenedChangeListener(event -> {
+            if (!event.isOpened()) {
+                Notification.show("Right-click on a row to see options", 3000, Notification.Position.BOTTOM_START);
+            }
+        });
     }
 }

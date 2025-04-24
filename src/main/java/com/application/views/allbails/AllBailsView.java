@@ -85,6 +85,7 @@ public class AllBailsView extends Div implements BeforeEnterObserver {
         // when a row is selected or deselected, populate form
         grid.asSingleSelect().addValueChangeListener(event -> {
             if (event.getValue() != null) {
+                save.setEnabled(false);
                 UI.getCurrent().navigate(String.format(BAIL_EDIT_ROUTE_TEMPLATE, event.getValue().getId()));
             } else {
                 clearForm();
@@ -104,6 +105,7 @@ public class AllBailsView extends Div implements BeforeEnterObserver {
         binder.bindInstanceFields(this);
 
         cancel.addClickListener(e -> {
+           
             clearForm();
             refreshGrid();
         });
@@ -192,6 +194,7 @@ public class AllBailsView extends Div implements BeforeEnterObserver {
     }
 
     private void refreshGrid() {
+        save.setVisible(true);
         grid.select(null);
         grid.getDataProvider().refreshAll();
     }
@@ -201,7 +204,9 @@ public class AllBailsView extends Div implements BeforeEnterObserver {
     }
 
     private void clearForm() {
+        save.setEnabled(true);
         populateForm(null);
+        
     }
 
     private void populateForm(Bail value) {

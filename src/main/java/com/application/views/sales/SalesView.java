@@ -255,6 +255,7 @@ public class SalesView extends Div implements BeforeEnterObserver {
     }
 
     private void refreshGrid() {
+        save.setEnabled(true);
         grid.select(null);
         grid.getDataProvider().refreshAll();
     }

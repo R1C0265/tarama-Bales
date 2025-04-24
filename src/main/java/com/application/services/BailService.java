@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import com.application.data.Bail;
 import com.application.data.BailGrade;
 import com.application.data.BailRepository;
+import com.application.security.SecurityUtils;
 
 import jakarta.transaction.Transactional;
 
@@ -28,10 +29,6 @@ public class BailService {
 
     public Bail getBails(Bail entity){
         return repository.findById(entity.getId()).orElseThrow(() -> new RuntimeException("Bail not found"));
-    }
-
-    public Bail update(Bail entity) {
-        return repository.save(entity);
     }
 
     public List<String> getBailName() {
@@ -56,6 +53,15 @@ public class BailService {
     public List<Bail> listAllBails() {
         return repository.findAll();
     }
+    
+    @Transactional
+    public Bail update(Bail bail) {
+        // Set the recordedBy field to the logged-in user
+        if (bail.getRecordedBy() == null || bail.getRecordedBy().isEmpty()) {
+            bail.setRecordedBy(SecurityUtils.getLoggedInUsername());
+        }
+        return repository.save(bail);
+    }
 
     @Transactional
     public void processSale(String bailName, int itemsSold) {
@@ -65,6 +71,10 @@ public class BailService {
             throw new RuntimeException("Not enough items in stock");
         }
         bail.setAmounOfItems(bail.getAmounOfItems() - itemsSold);
+
+        // Set the recordedBy field to the logged-in user
+        bail.setRecordedBy(SecurityUtils.getLoggedInUsername());
+
         repository.save(bail);
     }
 
@@ -74,6 +84,10 @@ public class BailService {
                 .orElseThrow(() -> new RuntimeException("Bail not found"));
         grade.setBail(bail);
         // bail.getGrades().add(grade);
+
+         // Set the recordedBy field to the logged-in user
+        bail.setRecordedBy(SecurityUtils.getLoggedInUsername());
+
         repository.save(bail);
     }
 }

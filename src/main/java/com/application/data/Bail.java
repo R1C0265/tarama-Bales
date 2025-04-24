@@ -3,6 +3,8 @@ package com.application.data;
 import java.time.LocalDate;
 
 import jakarta.persistence.Entity;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 
 @Entity
 public class Bail extends AbstractEntity {
@@ -11,7 +13,16 @@ public class Bail extends AbstractEntity {
     private Integer amounOfItems;
     private Integer bailPrice;
     private LocalDate dateOfPurchase;
+    private String recordedBy;
 
+    public String getRecordedBy() {
+        return this.recordedBy;
+    }
+
+    public void setRecordedBy(String recordedBy) {
+        this.recordedBy = recordedBy;
+    }
+    
     public String getBailName() {
         return bailName;
     }
@@ -38,3 +49,4 @@ public class Bail extends AbstractEntity {
     }
 
 }
+

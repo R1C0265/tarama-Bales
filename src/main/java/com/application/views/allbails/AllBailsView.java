@@ -132,7 +132,7 @@ public class AllBailsView extends Div implements BeforeEnterObserver {
                 n.setPosition(Position.MIDDLE);
                 n.addThemeVariants(NotificationVariant.LUMO_ERROR);
             } catch (ValidationException validationException) {
-                Notification.show("Failed to update the data. Check again that all values are valid");
+                Notification.show("Failed to save the bail. Check again that all values are valid");
             }
         });
     }

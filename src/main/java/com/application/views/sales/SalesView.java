@@ -62,7 +62,6 @@ public class SalesView extends Div implements BeforeEnterObserver {
     CollaborationAvatarGroup avatarGroup;
 
     private TextField customerName;
-    private TextField bailName;
     private TextField amounOfItems;
     private ComboBox<String> bailCategory;
     private TextField price;

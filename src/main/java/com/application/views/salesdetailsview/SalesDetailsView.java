@@ -1,6 +1,10 @@
-package com.application.views.purchasedetails;
+package com.application.views.salesdetailsview;
 
+import com.application.data.Purchase;
+import com.application.services.PurchaseService;
+import com.application.views.sales.SalesView;
 import com.vaadin.flow.component.Composite;
+import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.combobox.ComboBox;
@@ -10,22 +14,37 @@ import com.vaadin.flow.component.html.H4;
 import com.vaadin.flow.component.html.H6;
 import com.vaadin.flow.component.html.Hr;
 import com.vaadin.flow.component.icon.Icon;
+import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.NumberField;
 import com.vaadin.flow.component.textfield.TextField;
+import com.vaadin.flow.router.BeforeEnterEvent;
+import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.Menu;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.theme.lumo.LumoUtility.Gap;
+
+import jakarta.annotation.security.PermitAll;
+
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+
+import com.application.views.MainLayout;
 
 @PageTitle("Purchase Details")
-@Route("purchase-details")
-public class PurchaseDetailsView extends Composite<VerticalLayout> {
+@Route(value = "sales-details/:purchaseID", layout = MainLayout.class)
+@PermitAll
+public class SalesDetailsView extends Composite<VerticalLayout> implements BeforeEnterObserver{
 
-    public PurchaseDetailsView() {
+    private final PurchaseService purchaseService;
+    private Purchase purchase;
+
+    public SalesDetailsView(PurchaseService purchaseService) {
+        this.purchaseService = purchaseService;
+
         HorizontalLayout layoutRow = new HorizontalLayout();
         H3 h3 = new H3();
         Button buttonPrimary = new Button();
@@ -162,6 +181,25 @@ public class PurchaseDetailsView extends Composite<VerticalLayout> {
         layoutColumn4.add(h67);
         layoutColumn4.add(buttonPrimary5);
     }
+    
+
+
+
+    @Override
+    public void beforeEnter(BeforeEnterEvent event) {
+        Optional<Long> purchaseId = event.getRouteParameters().get("purchaseID").map(Long::parseLong);
+        if (purchaseId.isPresent()) {
+            Optional<Purchase> purchaseFromBackend = purchaseService.get(purchaseId.get());
+            if (purchaseFromBackend.isPresent()) {
+                this.purchase = purchaseFromBackend.get();
+                // displayDetails();
+            } else {
+                Notification.show("Purchase not found", 3000, Notification.Position.BOTTOM_START);
+                UI.getCurrent().navigate(SalesView.class);
+            }
+        }
+    }
+
 
     record SampleItem(String value, String label, Boolean disabled) {
     }

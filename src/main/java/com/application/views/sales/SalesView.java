@@ -292,7 +292,7 @@ public class SalesView extends Div implements BeforeEnterObserver {
         contextMenu.addItem("Details", event -> {
             event.getItem().ifPresent(purchase -> {
                 // Handle the "Details" action
-                UI.getCurrent().navigate("details/" + purchase.getId());
+                UI.getCurrent().navigate("sales-details/" + purchase.getId());
             });
         });
 

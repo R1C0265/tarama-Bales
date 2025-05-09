@@ -1,0 +1,151 @@
+package com.application.views.baildetails;
+
+import com.application.views.MainLayout;
+import com.vaadin.flow.component.Composite;
+import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.button.ButtonVariant;
+import com.vaadin.flow.component.datepicker.DatePicker;
+import com.vaadin.flow.component.html.H3;
+import com.vaadin.flow.component.html.H5;
+import com.vaadin.flow.component.html.Hr;
+import com.vaadin.flow.component.html.Span;
+import com.vaadin.flow.component.icon.Icon;
+import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
+import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.component.textfield.NumberField;
+import com.vaadin.flow.component.textfield.TextField;
+import com.vaadin.flow.router.Menu;
+import com.vaadin.flow.router.PageTitle;
+import com.vaadin.flow.router.Route;
+import com.vaadin.flow.theme.lumo.LumoUtility.Gap;
+
+import jakarta.annotation.security.PermitAll;
+
+@PageTitle("Bail Details")
+@Route(value = "bail-details/:bailID", layout = MainLayout.class)
+@PermitAll
+@Menu(title = "Bail Details", icon = "user", order = 1)
+
+public class BailDetailsView extends Composite<VerticalLayout> {
+
+    public BailDetailsView() {
+        HorizontalLayout layoutRow = new HorizontalLayout();
+        H3 h3 = new H3();
+        Icon icon = new Icon();
+        HorizontalLayout layoutRow2 = new HorizontalLayout();
+        TextField textField = new TextField();
+        DatePicker datePicker = new DatePicker();
+        NumberField numberField = new NumberField();
+        NumberField numberField2 = new NumberField();
+        HorizontalLayout layoutRow3 = new HorizontalLayout();
+        Button buttonPrimary = new Button();
+        Button buttonPrimary2 = new Button();
+        Button buttonPrimary3 = new Button();
+        Hr hr = new Hr();
+        H5 h5 = new H5();
+        HorizontalLayout layoutRow4 = new HorizontalLayout();
+        HorizontalLayout layoutRow5 = new HorizontalLayout();
+        Span badge = new Span();
+        NumberField numberField3 = new NumberField();
+        NumberField numberField4 = new NumberField();
+        HorizontalLayout layoutRow6 = new HorizontalLayout();
+        Button buttonPrimary4 = new Button();
+        Button buttonPrimary5 = new Button();
+        Button buttonPrimary6 = new Button();
+        getContent().setWidth("100%");
+        getContent().getStyle().set("flex-grow", "1");
+        layoutRow.setWidthFull();
+        getContent().setFlexGrow(1.0, layoutRow);
+        layoutRow.addClassName(Gap.MEDIUM);
+        layoutRow.setWidth("100%");
+        layoutRow.setHeight("min-content");
+        h3.setText("Bail Details");
+        h3.getStyle().set("flex-grow", "1");
+        icon.setIcon("lumo:user");
+/*         icon.setWidth("200px");
+        icon.setHeight("80px"); */
+        layoutRow2.setWidthFull();
+        getContent().setFlexGrow(1.0, layoutRow2);
+        layoutRow2.addClassName(Gap.MEDIUM);
+        layoutRow2.setWidth("100%");
+        layoutRow2.setHeight("min-content");
+        textField.setLabel("Bail Name");
+        textField.getStyle().set("flex-grow", "1");
+        datePicker.setLabel("Purchased On");
+        datePicker.getStyle().set("flex-grow", "1");
+        numberField.setLabel("Number of Clothes");
+        numberField.getStyle().set("flex-grow", "1");
+        numberField2.setLabel("Number field");
+        numberField2.getStyle().set("flex-grow", "1");
+        layoutRow3.setWidthFull();
+        getContent().setFlexGrow(1.0, layoutRow3);
+        layoutRow3.addClassName(Gap.MEDIUM);
+        layoutRow3.setWidth("100%");
+        layoutRow3.setHeight("min-content");
+        buttonPrimary.setText("EDIT BAIL");
+        buttonPrimary.getStyle().set("flex-grow", "1");
+        buttonPrimary.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+        buttonPrimary2.setText("SAVE BAIL");
+        buttonPrimary2.getStyle().set("flex-grow", "1");
+        buttonPrimary2.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+        buttonPrimary3.setText("DELETE BAIL");
+        buttonPrimary3.getStyle().set("flex-grow", "1");
+        buttonPrimary3.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+        h5.setText("Grade Details");
+        h5.setWidth("max-content");
+        layoutRow4.setWidthFull();
+        getContent().setFlexGrow(1.0, layoutRow4);
+        layoutRow4.addClassName(Gap.MEDIUM);
+        layoutRow4.setWidth("100%");
+        layoutRow4.getStyle().set("flex-grow", "1");
+        layoutRow5.setHeightFull();
+        layoutRow4.setFlexGrow(1.0, layoutRow5);
+        layoutRow5.addClassName(Gap.MEDIUM);
+        layoutRow5.getStyle().set("flex-grow", "1");
+        layoutRow5.setHeight("min-content");
+        badge.setText("GRADE 1");
+        badge.getStyle().set("flex-grow", "1");
+        badge.getElement().getThemeList().add("badge");
+        numberField3.setLabel("Number of Clothes");
+        numberField3.getStyle().set("flex-grow", "1");
+        numberField4.setLabel("Price Per Cloth");
+        numberField4.getStyle().set("flex-grow", "1");
+        layoutRow6.setWidthFull();
+        getContent().setFlexGrow(1.0, layoutRow6);
+        layoutRow6.addClassName(Gap.MEDIUM);
+        layoutRow6.setWidth("100%");
+        layoutRow6.setHeight("min-content");
+        buttonPrimary4.setText("EDIT GRADE");
+        buttonPrimary4.getStyle().set("flex-grow", "1");
+        buttonPrimary4.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+        buttonPrimary5.setText("SAVE GRADE");
+        buttonPrimary5.getStyle().set("flex-grow", "1");
+        buttonPrimary5.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+        buttonPrimary6.setText("DELETE GRADE");
+        buttonPrimary6.getStyle().set("flex-grow", "1");
+        buttonPrimary6.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+        getContent().add(layoutRow);
+        layoutRow.add(h3);
+        layoutRow.add(icon);
+        getContent().add(layoutRow2);
+        layoutRow2.add(textField);
+        layoutRow2.add(datePicker);
+        layoutRow2.add(numberField);
+        layoutRow2.add(numberField2);
+        getContent().add(layoutRow3);
+        layoutRow3.add(buttonPrimary);
+        layoutRow3.add(buttonPrimary2);
+        layoutRow3.add(buttonPrimary3);
+        getContent().add(hr);
+        getContent().add(h5);
+        getContent().add(layoutRow4);
+        layoutRow4.add(layoutRow5);
+        layoutRow5.add(badge);
+        layoutRow5.add(numberField3);
+        layoutRow5.add(numberField4);
+        getContent().add(layoutRow6);
+        layoutRow6.add(buttonPrimary4);
+        layoutRow6.add(buttonPrimary5);
+        layoutRow6.add(buttonPrimary6);
+    }
+}

@@ -1,4 +1,4 @@
-package com.application.views.gridwithfilters;
+/* package com.application.views.gridwithfilters;
 
 import com.application.data.SamplePerson;
 import com.application.services.SamplePersonService;
@@ -242,3 +242,4 @@ public class GridwithFiltersView extends Div {
     }
 
 }
+ */

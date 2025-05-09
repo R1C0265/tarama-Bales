@@ -2,51 +2,67 @@ package com.application.services;
 
 import com.application.data.Purchase;
 import com.application.data.PurchaseRepository;
+import com.application.data.Updates;
+import com.application.data.UpdatesRepository;
 import com.application.security.SecurityUtils;
-
-import java.util.Optional;
+import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDate;
+import java.util.Optional;
 
 @Service
 public class PurchaseService {
 
-    private final PurchaseRepository repository;
+    private final PurchaseRepository purchaseRepository;
+    private final UpdatesRepository updatesRepository;
 
-    public PurchaseService(PurchaseRepository repository) {
-        this.repository = repository;
+    public PurchaseService(PurchaseRepository purchaseRepository, UpdatesRepository updatesRepository) {
+        this.purchaseRepository = purchaseRepository;
+        this.updatesRepository = updatesRepository;
     }
 
     public Optional<Purchase> get(Long id) {
-        return repository.findById(id);
+        return purchaseRepository.findById(id);
     }
 
     public void delete(Long id) {
-        repository.deleteById(id);
+        purchaseRepository.deleteById(id);
     }
 
     public Page<Purchase> list(Pageable pageable) {
-        return repository.findAll(pageable);
+        return purchaseRepository.findAll(pageable);
     }
 
     public Page<Purchase> list(Pageable pageable, Specification<Purchase> filter) {
-        return repository.findAll(filter, pageable);
+        return purchaseRepository.findAll(filter, pageable);
     }
 
     public int count() {
-        return (int) repository.count();
+        return (int) purchaseRepository.count();
     }
 
-     @Transactional
+    @Transactional
     public Purchase update(Purchase purchase) {
-        // Set the cashier field to the logged-in user
         if (purchase.getCashier() == null || purchase.getCashier().isEmpty()) {
             purchase.setCashier(SecurityUtils.getLoggedInUsername());
         }
-        return repository.save(purchase);
+        Purchase savedPurchase = purchaseRepository.save(purchase);
+
+        // Add an update entry for the sale
+        Updates update = new Updates();
+        update.setImage("https://randomuser.me/api/portraits/women/42.jpg"); // Example image
+        update.setRecordedBy(SecurityUtils.getLoggedInUsername());
+        update.setDate(LocalDate.now().toString());
+        update.setTitle("Recorded a Sale");
+        update.setCategory("Sale");
+        update.setAmount("MWK " + purchase.getPrice());
+        updatesRepository.save(update);
+
+        return savedPurchase;
     }
 
 }

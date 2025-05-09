@@ -1,5 +1,6 @@
 package com.application.services;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -10,6 +11,8 @@ import org.springframework.stereotype.Service;
 import com.application.data.Bail;
 import com.application.data.BailGrade;
 import com.application.data.BailRepository;
+import com.application.data.Updates;
+import com.application.data.UpdatesRepository;
 import com.application.security.SecurityUtils;
 
 import jakarta.transaction.Transactional;
@@ -17,55 +20,84 @@ import jakarta.transaction.Transactional;
 @Service
 public class BailService {
 
-    private final BailRepository repository;
+    private final BailRepository bailRepository;
+    private final UpdatesRepository updatesRepository;
 
-    public BailService(BailRepository repository) {
-        this.repository = repository;
+    public BailService(BailRepository bailRepository, UpdatesRepository updatesRepository) {
+        this.bailRepository = bailRepository;
+        this.updatesRepository = updatesRepository;
     }
 
     public Optional<Bail> get(Long id) {
-        return repository.findById(id);
+        return bailRepository.findById(id);
     }
 
     public Bail getBails(Bail entity){
-        return repository.findById(entity.getId()).orElseThrow(() -> new RuntimeException("Bail not found"));
+        return bailRepository.findById(entity.getId()).orElseThrow(() -> new RuntimeException("Bail not found"));
     }
 
     public List<String> getBailName() {
-        return repository.findAllBailNames();
+        return bailRepository.findAllBailNames();
     }
+
+    @Transactional
     public void delete(Long id) {
-        repository.deleteById(id);
+        Optional<Bail> bail = bailRepository.findById(id);
+        if (bail.isPresent()) {
+            // Add an update entry for the deletion
+            Updates update = new Updates();
+            update.setImage("https://randomuser.me/api/portraits/men/42.jpg"); // Example image
+            update.setRecordedBy(SecurityUtils.getLoggedInUsername());
+            update.setDate(LocalDate.now().toString());
+            update.setTitle("Deleted a Bale");
+            update.setCategory("Delete");
+            update.setAmount("MWK " + bail.get().getBailPrice());
+            updatesRepository.save(update);
+
+            bailRepository.deleteById(id);
+        }
     }
 
     public Page<Bail> list(Pageable pageable) {
-        return repository.findAll(pageable);
+        return bailRepository.findAll(pageable);
     }
 
     public Page<Bail> list(Pageable pageable, Specification<Bail> filter) {
-        return repository.findAll(filter, pageable);
+        return bailRepository.findAll(filter, pageable);
     }
 
     public int count() {
-        return (int) repository.count();
+        return (int) bailRepository.count();
     }
 
     public List<Bail> listAllBails() {
-        return repository.findAll();
+        return bailRepository.findAll();
     }
     
     @Transactional
     public Bail update(Bail bail) {
-        // Set the recordedBy field to the logged-in user
+        boolean isNew = (bail.getId() == null); // Check if this is a new Bail
         if (bail.getRecordedBy() == null || bail.getRecordedBy().isEmpty()) {
             bail.setRecordedBy(SecurityUtils.getLoggedInUsername());
         }
-        return repository.save(bail);
-    }
+        Bail savedBail = bailRepository.save(bail);
+
+        Updates update = new Updates();
+        // Add an update entry if this is a new Bail
+        if (isNew) {
+            update.setTitle("Added a new Bale");
+            update.setCategory("Bale Added");
+            update.setDate(LocalDate.now().toString());
+            update.setAmount("MWK " + bail.getBailPrice());
+            updatesRepository.save(update);
+        }
+
+        return savedBail;
+        }
 
     @Transactional
     public void processSale(String bailName, int itemsSold) {
-        Bail bail = repository.findByBailName(bailName)
+        Bail bail = bailRepository.findByBailName(bailName)
                 .orElseThrow(() -> new RuntimeException("Bail not found"));
         if(bail.getAmounOfItems() < itemsSold) {
             throw new RuntimeException("Not enough items in stock");
@@ -75,12 +107,12 @@ public class BailService {
         // Set the recordedBy field to the logged-in user
         bail.setRecordedBy(SecurityUtils.getLoggedInUsername());
 
-        repository.save(bail);
+        bailRepository.save(bail);
     }
 
     @Transactional
     public void addGradeToBail(Long bailId, BailGrade grade) {
-        Bail bail = repository.findById(bailId)
+        Bail bail = bailRepository.findById(bailId)
                 .orElseThrow(() -> new RuntimeException("Bail not found"));
         grade.setBail(bail);
         // bail.getGrades().add(grade);
@@ -88,6 +120,6 @@ public class BailService {
          // Set the recordedBy field to the logged-in user
         bail.setRecordedBy(SecurityUtils.getLoggedInUsername());
 
-        repository.save(bail);
+        bailRepository.save(bail);
     }
 }

@@ -36,6 +36,7 @@ import com.vaadin.flow.theme.lumo.LumoUtility.TextColor;
 import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.Set;
+
 @PageTitle("Checkout Form")
 @Route("checkout-form")
 public class CheckoutFormView extends Div {
@@ -187,8 +188,8 @@ public class CheckoutFormView extends Div {
 
         ComboBox<String> stateSelect = new ComboBox<>("State");
         stateSelect.setRequiredIndicatorVisible(true);
-        stateSelect.setItems(states);
 
+        stateSelect.setItems(states);
         stateSelect.setVisible(false);
         countrySelect.setItems(countries);
         countrySelect

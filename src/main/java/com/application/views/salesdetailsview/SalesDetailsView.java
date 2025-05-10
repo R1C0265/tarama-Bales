@@ -21,7 +21,6 @@ import com.vaadin.flow.component.textfield.NumberField;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEnterObserver;
-import com.vaadin.flow.router.Menu;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.theme.lumo.LumoUtility.Gap;
@@ -37,44 +36,49 @@ import com.application.views.MainLayout;
 @PageTitle("Purchase Details")
 @Route(value = "sales-details/:purchaseID", layout = MainLayout.class)
 @PermitAll
-public class SalesDetailsView extends Composite<VerticalLayout> implements BeforeEnterObserver{
+public class SalesDetailsView extends Composite<VerticalLayout> implements BeforeEnterObserver {
 
     private final PurchaseService purchaseService;
     private Purchase purchase;
 
+    private final HorizontalLayout layoutRow = new HorizontalLayout();
+    private final H3 h3 = new H3();
+    private final Button buttonPrimary = new Button();
+    private final Hr hr = new Hr();
+    private final HorizontalLayout layoutRow2 = new HorizontalLayout();
+    private final VerticalLayout layoutColumn2 = new VerticalLayout();
+    private final Icon icon = new Icon();
+    private final VerticalLayout layoutColumn3 = new VerticalLayout();
+    private final HorizontalLayout layoutRow3 = new HorizontalLayout();
+    private final TextField textField = new TextField();
+    private final TextField textField2 = new TextField();
+    private final DatePicker datePicker = new DatePicker();
+    private final HorizontalLayout layoutRow4 = new HorizontalLayout();
+    private final ComboBox<SampleItem> comboBox = new ComboBox<>();
+    private final ComboBox<SampleItem> comboBox2 = new ComboBox<>();
+    private final NumberField numberField = new NumberField();
+    private final HorizontalLayout layoutRow5 = new HorizontalLayout();
+    private final Button buttonPrimary2 = new Button();
+    private final Button buttonPrimary3 = new Button();
+    private final Button buttonPrimary4 = new Button();
+    private final VerticalLayout layoutColumn4 = new VerticalLayout();
+    private final H4 h4 = new H4();
+    private final H6 h6 = new H6();
+    private final H6 h62 = new H6();
+    private final H6 h63 = new H6();
+    private final H6 h64 = new H6();
+    private final H6 h65 = new H6();
+    private final H6 h66 = new H6();
+    private final H6 h67 = new H6();
+    private final Button buttonPrimary5 = new Button();
+
     public SalesDetailsView(PurchaseService purchaseService) {
         this.purchaseService = purchaseService;
+        setLayout();
 
-        HorizontalLayout layoutRow = new HorizontalLayout();
-        H3 h3 = new H3();
-        Button buttonPrimary = new Button();
-        Hr hr = new Hr();
-        HorizontalLayout layoutRow2 = new HorizontalLayout();
-        VerticalLayout layoutColumn2 = new VerticalLayout();
-        Icon icon = new Icon();
-        VerticalLayout layoutColumn3 = new VerticalLayout();
-        HorizontalLayout layoutRow3 = new HorizontalLayout();
-        TextField textField = new TextField();
-        TextField textField2 = new TextField();
-        DatePicker datePicker = new DatePicker();
-        HorizontalLayout layoutRow4 = new HorizontalLayout();
-        ComboBox comboBox = new ComboBox();
-        ComboBox comboBox2 = new ComboBox();
-        NumberField numberField = new NumberField();
-        HorizontalLayout layoutRow5 = new HorizontalLayout();
-        Button buttonPrimary2 = new Button();
-        Button buttonPrimary3 = new Button();
-        Button buttonPrimary4 = new Button();
-        VerticalLayout layoutColumn4 = new VerticalLayout();
-        H4 h4 = new H4();
-        H6 h6 = new H6();
-        H6 h62 = new H6();
-        H6 h63 = new H6();
-        H6 h64 = new H6();
-        H6 h65 = new H6();
-        H6 h66 = new H6();
-        H6 h67 = new H6();
-        Button buttonPrimary5 = new Button();
+    }
+
+    private void setLayout() {
         getContent().setWidth("100%");
         getContent().getStyle().set("flex-grow", "1");
         layoutRow.addClassName(Gap.MEDIUM);
@@ -180,10 +184,8 @@ public class SalesDetailsView extends Composite<VerticalLayout> implements Befor
         layoutColumn4.add(h66);
         layoutColumn4.add(h67);
         layoutColumn4.add(buttonPrimary5);
+
     }
-    
-
-
 
     @Override
     public void beforeEnter(BeforeEnterEvent event) {
@@ -192,7 +194,7 @@ public class SalesDetailsView extends Composite<VerticalLayout> implements Befor
             Optional<Purchase> purchaseFromBackend = purchaseService.get(purchaseId.get());
             if (purchaseFromBackend.isPresent()) {
                 this.purchase = purchaseFromBackend.get();
-                // displayDetails();
+                displayDetails(); // Uncommented to display purchase details
             } else {
                 Notification.show("Purchase not found", 3000, Notification.Position.BOTTOM_START);
                 UI.getCurrent().navigate(SalesView.class);
@@ -200,17 +202,139 @@ public class SalesDetailsView extends Composite<VerticalLayout> implements Befor
         }
     }
 
+    /**
+     * Displays the purchase details in the UI components
+     */
+    private void displayDetails() {
+        if (purchase == null) {
+            return;
+        }
+
+        // Set values in the form fields
+        textField.setValue(purchase.getCustomerName() != null ? purchase.getCustomerName() : "");
+        textField.setReadOnly(true);
+
+        textField2.setValue(purchase.getCashier() != null ? purchase.getCashier() : "");
+        textField2.setReadOnly(true);
+
+        datePicker.setValue(purchase.getPurchaseDate());
+        datePicker.setReadOnly(true);
+
+        // Set bail category and grade
+        if (purchase.getBailName() != null) {
+            comboBox.setValue(getBailCategoryFromName(purchase.getBailName()));
+            comboBox.setReadOnly(true);
+
+            // For demo purposes, we'll set a default grade
+            comboBox2.setValue(new SampleItem("first", "Grade 1", null));
+            comboBox2.setReadOnly(true);
+        }
+
+        numberField.setValue((double) purchase.getAmounOfItems());
+        numberField.setReadOnly(true);
+
+        // Update receipt details
+        h6.setText("Purchased By: " + (purchase.getCustomerName() != null ? purchase.getCustomerName() : "N/A"));
+        h62.setText("Bail: " + (purchase.getBailName() != null ? purchase.getBailName() : "N/A"));
+        h63.setText("Grade: Grade 1"); // Default grade for demo
+        h64.setText("Price: MWK " + purchase.getPrice());
+        h65.setText("Amount Paid: MWK " + purchase.getPrice());
+        h66.setText("Sold By: " + (purchase.getCashier() != null ? purchase.getCashier() : "N/A"));
+        h67.setText("Date: " + (purchase.getPurchaseDate() != null ? purchase.getPurchaseDate().toString() : "N/A"));
+
+        // Set up button actions
+        buttonPrimary.addClickListener(e -> printReceipt());
+        buttonPrimary2.addClickListener(e -> enableEditing());
+        buttonPrimary3.addClickListener(e -> savePurchase());
+        buttonPrimary4.addClickListener(e -> deletePurchase());
+        buttonPrimary5.addClickListener(e -> printReceipt());
+    }
+
+    /**
+     * Enables editing of the purchase details
+     */
+    private void enableEditing() {
+        textField.setReadOnly(false);
+        textField2.setReadOnly(false);
+        datePicker.setReadOnly(false);
+        comboBox.setReadOnly(false);
+        comboBox2.setReadOnly(false);
+        numberField.setReadOnly(false);
+
+        Notification.show("Edit mode enabled", 2000, Notification.Position.BOTTOM_START);
+    }
+
+    /**
+     * Saves the purchase details
+     */
+    private void savePurchase() {
+        if (purchase != null) {
+            purchase.setCustomerName(textField.getValue());
+            purchase.setCashier(textField2.getValue());
+            purchase.setPurchaseDate(datePicker.getValue());
+
+            // Get the bail name from the selected category
+            if (comboBox.getValue() != null) {
+                purchase.setBailName(comboBox.getValue().value());
+            }
+
+            purchase.setAmounOfItems(numberField.getValue().intValue());
+
+            purchaseService.update(purchase);
+
+            // Reset read-only state
+            textField.setReadOnly(true);
+            textField2.setReadOnly(true);
+            datePicker.setReadOnly(true);
+            comboBox.setReadOnly(true);
+            comboBox2.setReadOnly(true);
+            numberField.setReadOnly(true);
+
+            // Update receipt details
+            displayDetails();
+
+            Notification.show("Purchase saved successfully", 2000, Notification.Position.BOTTOM_START);
+        }
+    }
+
+    /**
+     * Deletes the purchase
+     */
+    private void deletePurchase() {
+        if (purchase != null) {
+            purchaseService.delete(purchase.getId());
+            Notification.show("Purchase deleted", 2000, Notification.Position.BOTTOM_START);
+            UI.getCurrent().navigate(SalesView.class);
+        }
+    }
+
+    /**
+     * Prints the receipt (demo functionality)
+     */
+    private void printReceipt() {
+        Notification.show("Printing receipt...", 2000, Notification.Position.BOTTOM_START);
+        // In a real application, this would trigger the printing functionality
+    }
+
+    /**
+     * Gets the bail category from the bail name
+     */
+    private SampleItem getBailCategoryFromName(String bailName) {
+        // In a real application, this would look up the category from the database
+        // For demo purposes, we'll return a default category
+        return new SampleItem("first", "First", null);
+    }
 
     record SampleItem(String value, String label, Boolean disabled) {
     }
 
-    private void setComboBoxSampleData(ComboBox comboBox) {
+    private void setComboBoxSampleData(ComboBox<SampleItem> comboBox) {
         List<SampleItem> sampleItems = new ArrayList<>();
         sampleItems.add(new SampleItem("first", "First", null));
         sampleItems.add(new SampleItem("second", "Second", null));
         sampleItems.add(new SampleItem("third", "Third", Boolean.TRUE));
         sampleItems.add(new SampleItem("fourth", "Fourth", null));
         comboBox.setItems(sampleItems);
-        comboBox.setItemLabelGenerator(item -> ((SampleItem) item).label());
+        comboBox.setItemLabelGenerator(SampleItem::label);
     }
 }

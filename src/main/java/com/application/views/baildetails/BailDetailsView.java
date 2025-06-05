@@ -39,26 +39,26 @@ public class BailDetailsView extends Composite<VerticalLayout> implements Before
 
     private final BailService bailService;
     private Bail bail;
-    private final HorizontalLayout layoutRow = new HorizontalLayout();
+    private final HorizontalLayout mainHorizontalLayoutRow = new HorizontalLayout();
     private final H3 h3 = new H3();
     private final Image image = new Image();
-    private final HorizontalLayout layoutRow2 = new HorizontalLayout();
+    private final HorizontalLayout bailDetailsHorizontalLayout = new HorizontalLayout();
     private final TextField textField = new TextField();
     private final DatePicker datePicker = new DatePicker();
     private final NumberField numberField = new NumberField();
     private final NumberField numberField2 = new NumberField();
-    private final HorizontalLayout layoutRow3 = new HorizontalLayout();
+    private final HorizontalLayout bailDetailsButtonsLayout = new HorizontalLayout();
     private final Button buttonPrimary = new Button();
     private final Button buttonPrimary2 = new Button();
     private final Button buttonPrimary3 = new Button();
     private final Hr hr = new Hr();
     private final H5 h5 = new H5();
-    private final HorizontalLayout layoutRow4 = new HorizontalLayout();
-    private final HorizontalLayout layoutRow5 = new HorizontalLayout();
+    private final HorizontalLayout bailGradeHorizontalLayout = new HorizontalLayout();
+    private final HorizontalLayout bailGradeDetailsHorizontalLayout = new HorizontalLayout();
     private final Span badge = new Span();
     private final NumberField numberField3 = new NumberField();
     private final NumberField numberField4 = new NumberField();
-    private final HorizontalLayout layoutRow6 = new HorizontalLayout();
+    private final HorizontalLayout bailGradeButtonsHorizontalLayout = new HorizontalLayout();
     private final Button buttonPrimary4 = new Button();
     private final Button buttonPrimary5 = new Button();
     private final Button buttonPrimary6 = new Button();
@@ -68,11 +68,11 @@ public class BailDetailsView extends Composite<VerticalLayout> implements Before
 
         getContent().setWidth("100%");
         getContent().getStyle().set("flex-grow", "1");
-        layoutRow.setWidthFull();
-        getContent().setFlexGrow(1.0, layoutRow);
-        layoutRow.addClassName(Gap.MEDIUM);
-        layoutRow.setWidth("100%");
-        layoutRow.setHeight("min-content");
+        mainHorizontalLayoutRow.setWidthFull();
+        getContent().setFlexGrow(1.0, mainHorizontalLayoutRow);
+        mainHorizontalLayoutRow.addClassName(Gap.MEDIUM);
+        mainHorizontalLayoutRow.setWidth("100%");
+        mainHorizontalLayoutRow.setHeight("min-content");
         h3.setText("Bail Details");
         h3.getStyle().set("flex-grow", "1");
 
@@ -80,11 +80,11 @@ public class BailDetailsView extends Composite<VerticalLayout> implements Before
         image.setWidth("200px");
         image.setHeight("200px");
 
-        layoutRow2.setWidthFull();
-        getContent().setFlexGrow(1.0, layoutRow2);
-        layoutRow2.addClassName(Gap.MEDIUM);
-        layoutRow2.setWidth("100%");
-        layoutRow2.setHeight("min-content");
+        bailDetailsHorizontalLayout.setWidthFull();
+        getContent().setFlexGrow(1.0, bailDetailsHorizontalLayout);
+        bailDetailsHorizontalLayout.addClassName(Gap.MEDIUM);
+        bailDetailsHorizontalLayout.setWidth("100%");
+        bailDetailsHorizontalLayout.setHeight("min-content");
         textField.setLabel("Bail Name");
         textField.getStyle().set("flex-grow", "1");
         datePicker.setLabel("Purchased On");
@@ -93,11 +93,11 @@ public class BailDetailsView extends Composite<VerticalLayout> implements Before
         numberField.getStyle().set("flex-grow", "1");
         numberField2.setLabel("Number field");
         numberField2.getStyle().set("flex-grow", "1");
-        layoutRow3.setWidthFull();
-        getContent().setFlexGrow(1.0, layoutRow3);
-        layoutRow3.addClassName(Gap.MEDIUM);
-        layoutRow3.setWidth("100%");
-        layoutRow3.setHeight("min-content");
+        bailDetailsButtonsLayout.setWidthFull();
+        getContent().setFlexGrow(1.0, bailDetailsButtonsLayout);
+        bailDetailsButtonsLayout.addClassName(Gap.MEDIUM);
+        bailDetailsButtonsLayout.setWidth("100%");
+        bailDetailsButtonsLayout.setHeight("min-content");
         buttonPrimary.setText("EDIT BAIL");
         buttonPrimary.getStyle().set("flex-grow", "1");
         buttonPrimary.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
@@ -109,16 +109,16 @@ public class BailDetailsView extends Composite<VerticalLayout> implements Before
         buttonPrimary3.addThemeVariants(ButtonVariant.LUMO_ERROR);
         h5.setText("Grade Details");
         h5.setWidth("max-content");
-        layoutRow4.setWidthFull();
-        getContent().setFlexGrow(1.0, layoutRow4);
-        layoutRow4.addClassName(Gap.MEDIUM);
-        layoutRow4.setWidth("100%");
-        layoutRow4.getStyle().set("flex-grow", "1");
-        layoutRow5.setHeightFull();
-        layoutRow4.setFlexGrow(1.0, layoutRow5);
-        layoutRow5.addClassName(Gap.MEDIUM);
-        layoutRow5.getStyle().set("flex-grow", "1");
-        layoutRow5.setHeight("min-content");
+        bailGradeHorizontalLayout.setWidthFull();
+        getContent().setFlexGrow(1.0, bailGradeHorizontalLayout);
+        bailGradeHorizontalLayout.addClassName(Gap.MEDIUM);
+        bailGradeHorizontalLayout.setWidth("100%");
+        bailGradeHorizontalLayout.getStyle().set("flex-grow", "1");
+        bailGradeDetailsHorizontalLayout.setHeightFull();
+        bailGradeHorizontalLayout.setFlexGrow(1.0, bailGradeDetailsHorizontalLayout);
+        bailGradeDetailsHorizontalLayout.addClassName(Gap.MEDIUM);
+        bailGradeDetailsHorizontalLayout.getStyle().set("flex-grow", "1");
+        bailGradeDetailsHorizontalLayout.setHeight("min-content");
         badge.setText("GRADE 1");
         badge.getStyle().set("flex-grow", "1");
         badge.setHeight("min-content");
@@ -127,11 +127,11 @@ public class BailDetailsView extends Composite<VerticalLayout> implements Before
         numberField3.getStyle().set("flex-grow", "1");
         numberField4.setLabel("Price Per Cloth");
         numberField4.getStyle().set("flex-grow", "1");
-        layoutRow6.setWidthFull();
-        getContent().setFlexGrow(1.0, layoutRow6);
-        layoutRow6.addClassName(Gap.MEDIUM);
-        layoutRow6.setWidth("100%");
-        layoutRow6.setHeight("min-content");
+        bailGradeButtonsHorizontalLayout.setWidthFull();
+        getContent().setFlexGrow(1.0, bailGradeButtonsHorizontalLayout);
+        bailGradeButtonsHorizontalLayout.addClassName(Gap.MEDIUM);
+        bailGradeButtonsHorizontalLayout.setWidth("100%");
+        bailGradeButtonsHorizontalLayout.setHeight("min-content");
         buttonPrimary4.setText("EDIT GRADE");
         buttonPrimary4.getStyle().set("flex-grow", "1");
         buttonPrimary4.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
@@ -141,29 +141,29 @@ public class BailDetailsView extends Composite<VerticalLayout> implements Before
         buttonPrimary6.setText("DELETE GRADE");
         buttonPrimary6.getStyle().set("flex-grow", "1");
         buttonPrimary6.addThemeVariants(ButtonVariant.LUMO_ERROR);
-        getContent().add(layoutRow);
-        layoutRow.add(h3);
-        layoutRow.add(image);
-        getContent().add(layoutRow2);
-        layoutRow2.add(textField);
-        layoutRow2.add(datePicker);
-        layoutRow2.add(numberField);
-        layoutRow2.add(numberField2);
-        getContent().add(layoutRow3);
-        layoutRow3.add(buttonPrimary);
-        layoutRow3.add(buttonPrimary2);
-        layoutRow3.add(buttonPrimary3);
+        getContent().add(mainHorizontalLayoutRow);
+        mainHorizontalLayoutRow.add(h3);
+        mainHorizontalLayoutRow.add(image);
+        getContent().add(bailDetailsHorizontalLayout);
+        bailDetailsHorizontalLayout.add(textField);
+        bailDetailsHorizontalLayout.add(datePicker);
+        bailDetailsHorizontalLayout.add(numberField);
+        bailDetailsHorizontalLayout.add(numberField2);
+        getContent().add(bailDetailsButtonsLayout);
+        bailDetailsButtonsLayout.add(buttonPrimary);
+        bailDetailsButtonsLayout.add(buttonPrimary2);
+        bailDetailsButtonsLayout.add(buttonPrimary3);
         getContent().add(hr);
         getContent().add(h5);
-        getContent().add(layoutRow4);
-        layoutRow4.add(layoutRow5);
-        layoutRow5.add(badge);
-        layoutRow5.add(numberField3);
-        layoutRow5.add(numberField4);
-        getContent().add(layoutRow6);
-        layoutRow6.add(buttonPrimary4);
-        layoutRow6.add(buttonPrimary5);
-        layoutRow6.add(buttonPrimary6);
+        getContent().add(bailGradeHorizontalLayout);
+        bailGradeHorizontalLayout.add(bailGradeDetailsHorizontalLayout);
+        bailGradeDetailsHorizontalLayout.add(badge);
+        bailGradeDetailsHorizontalLayout.add(numberField3);
+        bailGradeDetailsHorizontalLayout.add(numberField4);
+        getContent().add(bailGradeButtonsHorizontalLayout);
+        bailGradeButtonsHorizontalLayout.add(buttonPrimary4);
+        bailGradeButtonsHorizontalLayout.add(buttonPrimary5);
+        bailGradeButtonsHorizontalLayout.add(buttonPrimary6);
     }
 
     @Override
@@ -183,6 +183,8 @@ public class BailDetailsView extends Composite<VerticalLayout> implements Before
 
     private void displayDetails() {
         // Use the existing UI components instead of creating new ones
+
+        //Setting the bail Details below
         h3.setText("Bail Details: " + bail.getBailName());
         textField.setValue(bail.getBailName());
         textField.setReadOnly(true);
@@ -197,10 +199,13 @@ public class BailDetailsView extends Composite<VerticalLayout> implements Before
         datePicker.setValue(bail.getDateOfPurchase());
         datePicker.setReadOnly(true);
 
-        // Set up button actions
+        // Set up button actions for Bails 
         buttonPrimary.addClickListener(e -> enableEditing());
         buttonPrimary2.addClickListener(e -> saveBail());
         buttonPrimary3.addClickListener(e -> deleteBail());
+
+
+        //setting the Bail Grade details
     }
 
     private void enableEditing() {

@@ -4,21 +4,21 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.ManyToOne;
 
 @Entity
-public class BailGrade extends AbstractEntity {
+public class BailGrade extends AbstractEntity   {
 
-    private String grade; // e.g., "A", "B", "C"
+    private Integer gradeNumber; // e.g., "A", "B", "C"
     private Integer quantity; // Number of items in this grade
     private Integer pricePerItem; // Price per item for this grade
 
     @ManyToOne
     private Bail bail; // Reference to the parent Bail
 
-    public String getGrade() {
-        return grade;
+    public Integer getGradeNumber() {
+        return gradeNumber;
     }
 
-    public void setGrade(String grade) {
-        this.grade = grade;
+    public void setGradeNumber(Integer gradeNumber) {
+        this.gradeNumber = gradeNumber;
     }
 
     public Integer getQuantity() {

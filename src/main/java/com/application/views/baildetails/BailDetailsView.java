@@ -1,7 +1,10 @@
 package com.application.views.baildetails;
 
 import com.application.data.Bail;
+import com.application.data.BailGrade;
 import com.application.services.BailService;
+import com.application.services.BailGradeService;
+
 import com.application.views.MainLayout;
 import com.application.views.allbails.AllBailsView;
 import com.vaadin.flow.component.Composite;
@@ -16,6 +19,7 @@ import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.component.progressbar.ProgressBar;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.Menu;
@@ -27,21 +31,27 @@ import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.component.datepicker.DatePicker;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.UI;
+
+import java.util.List;
 import java.util.Optional;
 import jakarta.annotation.security.PermitAll;
 
 @PageTitle("Bail Details")
 @Route(value = "bail-details/:bailID", layout = MainLayout.class)
 @PermitAll
+
 @Menu(title = "Bail Details", icon = "user", order = 1)
 
 public class BailDetailsView extends Composite<VerticalLayout> implements BeforeEnterObserver {
 
     private final BailService bailService;
+    private final BailGradeService bailGradeService;
     private Bail bail;
+    private BailGrade bailGrade;
     private final HorizontalLayout mainHorizontalLayoutRow = new HorizontalLayout();
     private final H3 h3 = new H3();
     private final Image image = new Image();
+    private final ProgressBar progressBar = new ProgressBar(0, 100);
     private final HorizontalLayout bailDetailsHorizontalLayout = new HorizontalLayout();
     private final TextField textField = new TextField();
     private final DatePicker datePicker = new DatePicker();
@@ -62,8 +72,10 @@ public class BailDetailsView extends Composite<VerticalLayout> implements Before
     private final Button buttonPrimary4 = new Button();
     private final Button buttonPrimary5 = new Button();
     private final Button buttonPrimary6 = new Button();
+    private final HorizontalLayout addBailGradeButtonLayout = new HorizontalLayout();
+    private final Button addBailGradeButton = new Button("ADD A GRADE");
 
-    public BailDetailsView(BailService bailService) {
+    public BailDetailsView(BailService bailService, BailGradeService bailGradeService) {
         this.bailService = bailService;
 
         getContent().setWidth("100%");
@@ -72,19 +84,19 @@ public class BailDetailsView extends Composite<VerticalLayout> implements Before
         getContent().setFlexGrow(1.0, mainHorizontalLayoutRow);
         mainHorizontalLayoutRow.addClassName(Gap.MEDIUM);
         mainHorizontalLayoutRow.setWidth("100%");
-        mainHorizontalLayoutRow.setHeight("min-content");
+        mainHorizontalLayoutRow.setHeight("flex-grow");
         h3.setText("Bail Details");
         h3.getStyle().set("flex-grow", "1");
 
-        image.setSrc("https://randomuser.me/api/portraits/men/42.jpg");
-        image.setWidth("200px");
-        image.setHeight("200px");
+        image.setSrc("images/empty-plant.png");
+        image.setWidth("150px");
+        image.setHeight("150px");
 
         bailDetailsHorizontalLayout.setWidthFull();
         getContent().setFlexGrow(1.0, bailDetailsHorizontalLayout);
         bailDetailsHorizontalLayout.addClassName(Gap.MEDIUM);
         bailDetailsHorizontalLayout.setWidth("100%");
-        bailDetailsHorizontalLayout.setHeight("min-content");
+        bailDetailsHorizontalLayout.setHeight("flex-grow");
         textField.setLabel("Bail Name");
         textField.getStyle().set("flex-grow", "1");
         datePicker.setLabel("Purchased On");
@@ -97,7 +109,7 @@ public class BailDetailsView extends Composite<VerticalLayout> implements Before
         getContent().setFlexGrow(1.0, bailDetailsButtonsLayout);
         bailDetailsButtonsLayout.addClassName(Gap.MEDIUM);
         bailDetailsButtonsLayout.setWidth("100%");
-        bailDetailsButtonsLayout.setHeight("min-content");
+        bailDetailsButtonsLayout.setHeight("flex-grow");
         buttonPrimary.setText("EDIT BAIL");
         buttonPrimary.getStyle().set("flex-grow", "1");
         buttonPrimary.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
@@ -108,7 +120,7 @@ public class BailDetailsView extends Composite<VerticalLayout> implements Before
         buttonPrimary3.getStyle().set("flex-grow", "1");
         buttonPrimary3.addThemeVariants(ButtonVariant.LUMO_ERROR);
         h5.setText("Grade Details");
-        h5.setWidth("max-content");
+        h5.setWidth("flex-grow");
         bailGradeHorizontalLayout.setWidthFull();
         getContent().setFlexGrow(1.0, bailGradeHorizontalLayout);
         bailGradeHorizontalLayout.addClassName(Gap.MEDIUM);
@@ -118,10 +130,9 @@ public class BailDetailsView extends Composite<VerticalLayout> implements Before
         bailGradeHorizontalLayout.setFlexGrow(1.0, bailGradeDetailsHorizontalLayout);
         bailGradeDetailsHorizontalLayout.addClassName(Gap.MEDIUM);
         bailGradeDetailsHorizontalLayout.getStyle().set("flex-grow", "1");
-        bailGradeDetailsHorizontalLayout.setHeight("min-content");
-        badge.setText("GRADE 1");
+        bailGradeDetailsHorizontalLayout.setHeight("flex-grow");
         badge.getStyle().set("flex-grow", "1");
-        badge.setHeight("min-content");
+        badge.setHeight("flex-grow");
         badge.getElement().getThemeList().add("badge");
         numberField3.setLabel("Number of Clothes");
         numberField3.getStyle().set("flex-grow", "1");
@@ -131,8 +142,7 @@ public class BailDetailsView extends Composite<VerticalLayout> implements Before
         getContent().setFlexGrow(1.0, bailGradeButtonsHorizontalLayout);
         bailGradeButtonsHorizontalLayout.addClassName(Gap.MEDIUM);
         bailGradeButtonsHorizontalLayout.setWidth("100%");
-        bailGradeButtonsHorizontalLayout.setHeight("min-content");
-        buttonPrimary4.setText("EDIT GRADE");
+        bailGradeButtonsHorizontalLayout.setHeight("flex-grow");
         buttonPrimary4.getStyle().set("flex-grow", "1");
         buttonPrimary4.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
         buttonPrimary5.setText("SAVE GRADE");
@@ -142,7 +152,10 @@ public class BailDetailsView extends Composite<VerticalLayout> implements Before
         buttonPrimary6.getStyle().set("flex-grow", "1");
         buttonPrimary6.addThemeVariants(ButtonVariant.LUMO_ERROR);
         getContent().add(mainHorizontalLayoutRow);
+        progressBar.setValue(50);
         mainHorizontalLayoutRow.add(h3);
+        mainHorizontalLayoutRow.add(progressBar);
+
         mainHorizontalLayoutRow.add(image);
         getContent().add(bailDetailsHorizontalLayout);
         bailDetailsHorizontalLayout.add(textField);
@@ -164,6 +177,10 @@ public class BailDetailsView extends Composite<VerticalLayout> implements Before
         bailGradeButtonsHorizontalLayout.add(buttonPrimary4);
         bailGradeButtonsHorizontalLayout.add(buttonPrimary5);
         bailGradeButtonsHorizontalLayout.add(buttonPrimary6);
+        addBailGradeButtonLayout.add(addBailGradeButton);
+        getContent().add(addBailGradeButtonLayout);
+
+        this.bailGradeService = bailGradeService;
     }
 
     @Override
@@ -171,9 +188,22 @@ public class BailDetailsView extends Composite<VerticalLayout> implements Before
         Optional<Long> bailId = event.getRouteParameters().get("bailID").map(Long::parseLong);
         if (bailId.isPresent()) {
             Optional<Bail> bailFromBackend = bailService.get(bailId.get());
+            // check if Bail exists Are Found
             if (bailFromBackend.isPresent()) {
                 this.bail = bailFromBackend.get();
-                displayDetails(); // Call displayDetails after loading the bail data
+                // Call displayDetails after loading the bail data
+                displayBailDetails();
+                // check if bail grades are available
+                List<BailGrade> gradeFromBackend = bailGradeService.listAllBails();
+                if ((gradeFromBackend.isEmpty())) {
+                    addBailGradeButtonLayout.setVisible(false);
+                    displayBailGradeDetails();
+                } else {
+                    bailGradeDetailsHorizontalLayout.setVisible(false);
+                    bailGradeButtonsHorizontalLayout.setVisible(false);
+                    addBailGradeButtonLayout.setVisible(true);
+                }
+
             } else {
                 Notification.show("Bail not found", 3000, Notification.Position.BOTTOM_START);
                 UI.getCurrent().navigate(AllBailsView.class);
@@ -181,10 +211,17 @@ public class BailDetailsView extends Composite<VerticalLayout> implements Before
         }
     }
 
-    private void displayDetails() {
+    // this should be a modal with 6 textfields and a Button. it is to add the
+    // Grade.
+
+    private void openGradeForm() {
+
+    }
+
+    private void displayBailDetails() {
         // Use the existing UI components instead of creating new ones
 
-        //Setting the bail Details below
+        // Setting the bail Details below
         h3.setText("Bail Details: " + bail.getBailName());
         textField.setValue(bail.getBailName());
         textField.setReadOnly(true);
@@ -199,16 +236,23 @@ public class BailDetailsView extends Composite<VerticalLayout> implements Before
         datePicker.setValue(bail.getDateOfPurchase());
         datePicker.setReadOnly(true);
 
-        // Set up button actions for Bails 
-        buttonPrimary.addClickListener(e -> enableEditing());
+        // Set up button actions for Bails
+        buttonPrimary.addClickListener(e -> enableBailEditing());
         buttonPrimary2.addClickListener(e -> saveBail());
         buttonPrimary3.addClickListener(e -> deleteBail());
 
-
-        //setting the Bail Grade details
+        // setting the Bail Grade details
     }
 
-    private void enableEditing() {
+    private void displayBailGradeDetails() {
+        for (BailGrade grade : bailGradeService.listAllBails()) {
+            badge.setText("GRADE " + grade.getGradeNumber());
+            break;
+        }
+
+    }
+
+    private void enableBailEditing() {
         textField.setReadOnly(false);
         numberField.setReadOnly(false);
         numberField2.setReadOnly(false);

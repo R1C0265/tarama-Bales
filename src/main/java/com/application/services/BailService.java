@@ -29,11 +29,11 @@ public class BailService {
     }
 
     public Optional<Bail> get(Long id) {
-        return bailRepository.findById(id);
+        return bailRepository.findByIdWithGrades(id);
     }
 
     public Bail getBails(Bail entity){
-        return bailRepository.findById(entity.getId()).orElseThrow(() -> new RuntimeException("Bail not found"));
+        return bailRepository.findByIdWithGrades(entity.getId()).orElseThrow(() -> new RuntimeException("Bail not found"));
     }
 
     public List<String> getBailName() {
@@ -110,16 +110,5 @@ public class BailService {
         bailRepository.save(bail);
     }
 
-    @Transactional
-    public void addGradeToBail(Long bailId, BailGrade grade) {
-        Bail bail = bailRepository.findById(bailId)
-                .orElseThrow(() -> new RuntimeException("Bail not found"));
-        grade.setBail(bail);
-        // bail.getGrades().add(grade);
-
-         // Set the recordedBy field to the logged-in user
-        bail.setRecordedBy(SecurityUtils.getLoggedInUsername());
-
-        bailRepository.save(bail);
-    }
+   
 }

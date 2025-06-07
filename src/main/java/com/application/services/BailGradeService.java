@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import com.application.data.Bail;
 import com.application.data.BailGrade;
 import com.application.data.BailGradeRepository;
+import com.application.data.BailRepository;
 import com.application.data.Updates;
 import com.application.data.UpdatesRepository;
 import com.application.security.SecurityUtils;
@@ -19,9 +20,11 @@ import jakarta.transaction.Transactional;
 @Service
 public class BailGradeService {
 
+    private final BailRepository bailRepository;
     private final BailGradeRepository bailGradeRepository;
 
-    public BailGradeService(BailGradeRepository bailGradeRepository) {
+    public BailGradeService(BailGradeRepository bailGradeRepository, BailRepository bailRepository) {
+        this.bailRepository = bailRepository;
         this.bailGradeRepository = bailGradeRepository;
     }
 
@@ -29,11 +32,10 @@ public class BailGradeService {
         return bailGradeRepository.findById(id);
     }
 
-
-        public List<BailGrade> getBailGrades() {
+    public List<BailGrade> getBailGrades() {
         return bailGradeRepository.findAllGradeNumbers();
     }
-    
+
     public int count() {
         return (int) bailGradeRepository.count();
     }
@@ -61,10 +63,6 @@ public class BailGradeService {
      * }
      * }
      */
-
-
-
-
 
     /*
      * @Transactional
@@ -104,18 +102,21 @@ public class BailGradeService {
      * 
      * bailGradeRepository.save(bail);
      * }
-     * 
-     * @Transactional
-     * public void addGradeToBail(Long bailId, BailGrade grade) {
-     * Bail bail = bailGradeRepository.findById(bailId)
-     * .orElseThrow(() -> new RuntimeException("Bail not found"));
-     * grade.setBail(bail);
-     * // bail.getGrades().add(grade);
-     * 
-     * // Set the recordedBy field to the logged-in user
-     * bail.setRecordedBy(SecurityUtils.getLoggedInUsername());
-     * 
-     * bailGradeRepository.save(bail);
-     * }
      */
+    @Transactional
+    public void addGradeToBail(Long bailId, BailGrade grade) {
+        Bail bail = bailRepository.findById(bailId)
+            .orElseThrow(() -> new RuntimeException("Bail not found"));
+        BailGrade newGrade = new BailGrade();
+        newGrade.setBail(bail);
+        newGrade.setGradeNumber(grade.getGradeNumber());
+        newGrade.setQuantity(grade.getQuantity());
+        newGrade.setPricePerItem(grade.getPricePerItem());
+
+        newGrade.setRecordedBy(SecurityUtils.getLoggedInUsername());
+        newGrade.setCreatedDate(LocalDate.now());
+
+        bailGradeRepository.save(newGrade);
+    }
+
 }

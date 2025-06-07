@@ -1,10 +1,12 @@
 package com.application.data;
 
 import java.time.LocalDate;
-
+import java.util.ArrayList;
+import java.util.List;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
+import jakarta.persistence.OneToMany;
+
 
 @Entity
 public class Bail extends AbstractEntity {
@@ -14,6 +16,16 @@ public class Bail extends AbstractEntity {
     private Integer bailPrice;
     private LocalDate dateOfPurchase;
     private String recordedBy;
+    @OneToMany(mappedBy = "bail", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<BailGrade> grades = new ArrayList<>();
+
+    public List<BailGrade> getGrades() {
+        return grades;
+    }
+
+    public void setGrades(List<BailGrade> grades) {
+        this.grades = grades;
+    }
 
     public String getRecordedBy() {
         return this.recordedBy;

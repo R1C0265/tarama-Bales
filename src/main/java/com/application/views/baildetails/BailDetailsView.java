@@ -29,6 +29,7 @@ import com.vaadin.flow.theme.lumo.LumoUtility.Gap;
 import com.vaadin.flow.component.textfield.NumberField;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.component.datepicker.DatePicker;
+import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.UI;
 
@@ -73,7 +74,8 @@ public class BailDetailsView extends Composite<VerticalLayout> implements Before
     private final Button buttonPrimary5 = new Button();
     private final Button buttonPrimary6 = new Button();
     private final HorizontalLayout addBailGradeButtonLayout = new HorizontalLayout();
-    private final Button addBailGradeButton = new Button("ADD A GRADE");
+    private final Button addBailGradeButton = new Button("ADD A GRADE", e -> openGradeForm());
+    private final VerticalLayout gradesContainer = new VerticalLayout();
 
     public BailDetailsView(BailService bailService, BailGradeService bailGradeService) {
         this.bailService = bailService;
@@ -179,6 +181,7 @@ public class BailDetailsView extends Composite<VerticalLayout> implements Before
         bailGradeButtonsHorizontalLayout.add(buttonPrimary6);
         addBailGradeButtonLayout.add(addBailGradeButton);
         getContent().add(addBailGradeButtonLayout);
+        getContent().add(gradesContainer);
 
         this.bailGradeService = bailGradeService;
     }
@@ -188,22 +191,10 @@ public class BailDetailsView extends Composite<VerticalLayout> implements Before
         Optional<Long> bailId = event.getRouteParameters().get("bailID").map(Long::parseLong);
         if (bailId.isPresent()) {
             Optional<Bail> bailFromBackend = bailService.get(bailId.get());
-            // check if Bail exists Are Found
             if (bailFromBackend.isPresent()) {
                 this.bail = bailFromBackend.get();
-                // Call displayDetails after loading the bail data
                 displayBailDetails();
-                // check if bail grades are available
-                List<BailGrade> gradeFromBackend = bailGradeService.listAllBails();
-                if ((gradeFromBackend.isEmpty())) {
-                    addBailGradeButtonLayout.setVisible(false);
-                    displayBailGradeDetails();
-                } else {
-                    bailGradeDetailsHorizontalLayout.setVisible(false);
-                    bailGradeButtonsHorizontalLayout.setVisible(false);
-                    addBailGradeButtonLayout.setVisible(true);
-                }
-
+                displayBailGradeDetails(); // Always call this to refresh grades
             } else {
                 Notification.show("Bail not found", 3000, Notification.Position.BOTTOM_START);
                 UI.getCurrent().navigate(AllBailsView.class);
@@ -215,7 +206,42 @@ public class BailDetailsView extends Composite<VerticalLayout> implements Before
     // Grade.
 
     private void openGradeForm() {
+        // Create the dialog
+        Dialog dialog = new Dialog();
+        dialog.setHeaderTitle("Add New Grade");
 
+        // Create 6 text fields
+        TextField gradeNumberField = new TextField("Grade Number");
+        TextField quantityField = new TextField("Quantity");
+        TextField pricePerItemField = new TextField("Price Per Item");
+        TextField descriptionField = new TextField("Description");
+        TextField supplierField = new TextField("Supplier");
+        TextField notesField = new TextField("Notes");
+
+        // Arrange fields in a vertical layout
+        VerticalLayout fieldsLayout = new VerticalLayout(
+                gradeNumberField,
+                quantityField,
+                pricePerItemField,
+                descriptionField,
+                supplierField,
+                notesField);
+        fieldsLayout.setPadding(false);
+        fieldsLayout.setSpacing(true);
+
+        // Create buttons
+        Button saveButton = new Button("Save", event -> {
+            // TODO: Save logic here
+            dialog.close();
+        });
+        saveButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+
+        Button cancelButton = new Button("Cancel", event -> dialog.close());
+
+        HorizontalLayout buttonsLayout = new HorizontalLayout(saveButton, cancelButton);
+
+        dialog.add(fieldsLayout, buttonsLayout);
+        dialog.open();
     }
 
     private void displayBailDetails() {
@@ -245,11 +271,61 @@ public class BailDetailsView extends Composite<VerticalLayout> implements Before
     }
 
     private void displayBailGradeDetails() {
-        for (BailGrade grade : bailGradeService.listAllBails()) {
-            badge.setText("GRADE " + grade.getGradeNumber());
-            break;
+        gradesContainer.removeAll(); // Clear previous grades
+
+        List<BailGrade> grades = bail.getGrades();
+        if (grades == null || grades.isEmpty()) {
+            gradesContainer.add(new Span("No grades available for this bail."));
+            return;
         }
 
+        for (BailGrade grade : grades) {
+            // Create fields for each property
+            TextField gradeNumberField = new TextField("Grade Number");
+            gradeNumberField.setValue(grade.getGradeNumber() != null ? grade.getGradeNumber().toString() : "");
+            gradeNumberField.setReadOnly(true);
+
+            TextField quantityField = new TextField("Quantity");
+            quantityField.setValue(grade.getQuantity() != null ? grade.getQuantity().toString() : "");
+            quantityField.setReadOnly(true);
+
+            TextField pricePerItemField = new TextField("Price Per Item");
+            pricePerItemField.setValue(grade.getPricePerItem() != null ? grade.getPricePerItem().toString() : "");
+            pricePerItemField.setReadOnly(true);
+
+            TextField recordedByField = new TextField("Recorded By");
+            recordedByField.setValue(grade.getRecordedBy() != null ? grade.getRecordedBy() : "");
+            recordedByField.setReadOnly(true);
+
+            TextField createdDateField = new TextField("Created Date");
+            createdDateField.setValue(grade.getCreatedDate() != null ? grade.getCreatedDate().toString() : "");
+            createdDateField.setReadOnly(true);
+
+            // Add more fields as needed
+
+            // Layout for this grade
+            HorizontalLayout gradeLayout = new HorizontalLayout(
+                gradeNumberField,
+                quantityField,
+                pricePerItemField,
+                recordedByField,
+                createdDateField
+            );
+            gradeLayout.setWidthFull();
+
+            // Optionally, add buttons for each grade (edit/delete)
+            Button editButton = new Button("Edit");
+            Button deleteButton = new Button("Delete");
+            // Add listeners as needed
+
+            HorizontalLayout buttonsLayout = new HorizontalLayout(editButton, deleteButton);
+
+            VerticalLayout gradeRow = new VerticalLayout(gradeLayout, buttonsLayout);
+            gradeRow.setPadding(false);
+            gradeRow.setSpacing(false);
+
+            gradesContainer.add(gradeRow);
+        }
     }
 
     private void enableBailEditing() {

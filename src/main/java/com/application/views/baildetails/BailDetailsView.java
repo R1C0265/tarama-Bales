@@ -14,6 +14,7 @@ import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.H3;
 import com.vaadin.flow.component.html.H5;
+import com.vaadin.flow.component.html.H6;
 import com.vaadin.flow.component.html.Hr;
 import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.html.Span;
@@ -44,6 +45,10 @@ import jakarta.annotation.security.PermitAll;
 @Menu(title = "Bail Details", icon = "user", order = 1)
 
 public class BailDetailsView extends Composite<VerticalLayout> implements BeforeEnterObserver {
+    private final H6 editInfoH6 = new H6(
+            "You can edit your files below by clicking on Edit. Take note that Deleting The Bail will Delete is Irreversible and can only be done by you as the Administrator");
+    private final H6 progressLabelH6 = new H6(
+            "Progress to Completion");
 
     private final BailService bailService;
     private final BailGradeService bailGradeService;
@@ -68,12 +73,12 @@ public class BailDetailsView extends Composite<VerticalLayout> implements Before
     private final HorizontalLayout bailGradeDetailsHorizontalLayout = new HorizontalLayout();
     // Removed numberField3 and numberField4 as per user request
     private final HorizontalLayout bailGradeButtonsHorizontalLayout = new HorizontalLayout();
-    private final Button buttonPrimary4 = new Button();
-    // Removed buttonPrimary5 (SAVE GRADE) and buttonPrimary6 (DELETE GRADE) as per
-    // user request
+
     private final HorizontalLayout addBailGradeButtonLayout = new HorizontalLayout();
     private final Button addBailGradeButton = new Button("ADD A GRADE", e -> openGradeForm());
     private final VerticalLayout gradesContainer = new VerticalLayout();
+    private final Button addNewGradeButton = new Button("Add a New Grade", e->{openGradeForm();});
+     
 
     public BailDetailsView(BailService bailService, BailGradeService bailGradeService) {
         this.bailService = bailService;
@@ -88,9 +93,18 @@ public class BailDetailsView extends Composite<VerticalLayout> implements Before
         h3.setText("Bail Details");
         h3.getStyle().set("flex-grow", "1");
 
+        // Create a vertical layout for the title, info, and progress bar
+        VerticalLayout titleAndProgressLayout = new VerticalLayout();
+        titleAndProgressLayout.setPadding(false);
+        titleAndProgressLayout.setSpacing(false);
+        titleAndProgressLayout.setAlignItems(VerticalLayout.Alignment.START);
+        titleAndProgressLayout.add(h3);
+        titleAndProgressLayout.add(progressLabelH6);
+        titleAndProgressLayout.add(progressBar);
+
         image.setSrc("images/empty-plant.png");
-        image.setWidth("150px");
-        image.setHeight("150px");
+        image.setWidth("200px");
+        image.setHeight("200px");
 
         bailDetailsHorizontalLayout.setWidthFull();
         getContent().setFlexGrow(1.0, bailDetailsHorizontalLayout);
@@ -133,12 +147,16 @@ public class BailDetailsView extends Composite<VerticalLayout> implements Before
         bailGradeDetailsHorizontalLayout.setHeight("flex-grow");
         // Removed numberField3, numberField4, buttonPrimary5, buttonPrimary6 and
         // related layout code as per user request
+
+        // Add the title/progress layout and image to the main row
+        mainHorizontalLayoutRow.add(titleAndProgressLayout, image);
         getContent().add(mainHorizontalLayoutRow);
         progressBar.setValue(50);
-        mainHorizontalLayoutRow.add(h3);
-        mainHorizontalLayoutRow.add(progressBar);
+        progressBar.setWidth("40%");
+        // Vaadin ProgressBar does not have a built-in label/title method, so we use H6
+        // above it.
 
-        mainHorizontalLayoutRow.add(image);
+        mainHorizontalLayoutRow.add(gradesContainer);
         getContent().add(bailDetailsHorizontalLayout);
         bailDetailsHorizontalLayout.add(textField);
         bailDetailsHorizontalLayout.add(datePicker);
@@ -153,10 +171,9 @@ public class BailDetailsView extends Composite<VerticalLayout> implements Before
         getContent().add(bailGradeHorizontalLayout);
         bailGradeHorizontalLayout.add(bailGradeDetailsHorizontalLayout);
         getContent().add(bailGradeButtonsHorizontalLayout);
-        bailGradeButtonsHorizontalLayout.add(buttonPrimary4);
-        
         getContent().add(addBailGradeButtonLayout);
         getContent().add(gradesContainer);
+        getContent().add(addNewGradeButton);
 
         this.bailGradeService = bailGradeService;
     }
@@ -220,13 +237,14 @@ public class BailDetailsView extends Composite<VerticalLayout> implements Before
     }
 
     private void displayBailDetails() {
-        // Use the existing UI components instead of creating new ones
         // Setting the bail Details below
+
+        buttonPrimary2.setEnabled(false);
         h3.setText("Bail Details for: " + bail.getBailName());
         textField.setValue(bail.getBailName());
         textField.setReadOnly(true);
 
-        numberField.setValue((double) bail.getAmounOfItems());
+        numberField.setValue((double) bail.getCurrentAmountOfItems());
         numberField.setReadOnly(true);
 
         numberField2.setLabel("Bail Price");
@@ -250,7 +268,7 @@ public class BailDetailsView extends Composite<VerticalLayout> implements Before
         List<BailGrade> grades = bail.getGrades();
         if (grades == null || grades.isEmpty()) {
             gradesContainer.add(new Span("No grades available for this bail."));
-            addBailGradeButtonLayout.add(addBailGradeButton);
+            addBailGradeButtonLayout.add(addBailGradeButton) ;
             return;
         }
 
@@ -299,7 +317,10 @@ public class BailDetailsView extends Composite<VerticalLayout> implements Before
             gradeRow.setSpacing(false);
 
             gradesContainer.add(gradeRow);
+
         }
+
+
     }
 
     private void enableBailEditing() {
@@ -308,13 +329,14 @@ public class BailDetailsView extends Composite<VerticalLayout> implements Before
         numberField2.setReadOnly(false);
         datePicker.setReadOnly(false);
         buttonPrimary.setEnabled(false);
+        buttonPrimary2.setEnabled(true);
         Notification.show("Edit mode enabled", 2000, Notification.Position.BOTTOM_START);
     }
 
     private void saveBail() {
         if (bail != null) {
             bail.setBailName(textField.getValue());
-            bail.setAmounOfItems(numberField.getValue().intValue());
+            bail.setCurrentAmountOfItems(numberField.getValue().intValue());
             bail.setBailPrice(numberField2.getValue().intValue());
             bail.setDateOfPurchase(datePicker.getValue());
 

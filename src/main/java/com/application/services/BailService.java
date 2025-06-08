@@ -99,10 +99,10 @@ public class BailService {
     public void processSale(String bailName, int itemsSold) {
         Bail bail = bailRepository.findByBailName(bailName)
                 .orElseThrow(() -> new RuntimeException("Bail not found"));
-        if(bail.getAmounOfItems() < itemsSold) {
+        if(bail.getCurrentAmountOfItems() < itemsSold) {
             throw new RuntimeException("Not enough items in stock");
         }
-        bail.setAmounOfItems(bail.getAmounOfItems() - itemsSold);
+        bail.setCurrentAmountOfItems(bail.getCurrentAmountOfItems() - itemsSold);
 
         // Set the recordedBy field to the logged-in user
         bail.setRecordedBy(SecurityUtils.getLoggedInUsername());

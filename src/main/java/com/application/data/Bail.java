@@ -12,7 +12,8 @@ import jakarta.persistence.OneToMany;
 public class Bail extends AbstractEntity {
 
     private String bailName;
-    private Integer amounOfItems;
+    private Integer amountOfItemsAtPurchase;
+    private Integer currentAmountOfItems;
     private Integer bailPrice;
     private LocalDate dateOfPurchase;
     private String recordedBy;
@@ -25,6 +26,12 @@ public class Bail extends AbstractEntity {
 
     public void setGrades(List<BailGrade> grades) {
         this.grades = grades;
+    }
+    public void setCurrentAmountOfItems(Integer currentAmountOfItems) {
+        this.currentAmountOfItems = currentAmountOfItems;
+    }
+    public Integer getCurrentAmountOfItems() {
+        return currentAmountOfItems;
     }
 
     public String getRecordedBy() {
@@ -41,11 +48,11 @@ public class Bail extends AbstractEntity {
     public void setBailName(String bailName) {
         this.bailName = bailName;
     }
-    public Integer getAmounOfItems() {
-        return amounOfItems;
+    public Integer getamountOfItemsAtPurchase() {
+        return amountOfItemsAtPurchase;
     }
-    public void setAmounOfItems(Integer amounOfItems) {
-        this.amounOfItems = amounOfItems;
+    public void setamountOfItemsAtPurchase(Integer amountOfItemsAtPurchase) {
+        this.amountOfItemsAtPurchase = amountOfItemsAtPurchase;
     }
     public Integer getBailPrice() {
         return bailPrice;

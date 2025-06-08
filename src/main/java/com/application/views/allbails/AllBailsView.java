@@ -43,7 +43,7 @@ public class AllBailsView extends Div implements BeforeEnterObserver {
     private final Grid<Bail> grid = new Grid<>(Bail.class, false);
 
     private TextField bailName;
-    private TextField amounOfItems;
+    private TextField currentAmountOfItems;
     private TextField bailPrice;
     private DatePicker dateOfPurchase;
 
@@ -71,7 +71,7 @@ public class AllBailsView extends Div implements BeforeEnterObserver {
 
         // Configure Grid
         grid.addColumn("bailName").setAutoWidth(true);
-        grid.addColumn("amounOfItems").setAutoWidth(true);
+        grid.addColumn("currentAmountOfItems").setAutoWidth(true);
         grid.addColumn("bailPrice").setAutoWidth(true);
         grid.addColumn("dateOfPurchase").setAutoWidth(true);
         grid.setItems(query -> bailService.list(
@@ -97,8 +97,8 @@ public class AllBailsView extends Div implements BeforeEnterObserver {
         binder = new BeanValidationBinder<>(Bail.class);
 
         // Bind fields. This is where you'd define e.g. validation rules
-        binder.forField(amounOfItems).withConverter(new StringToIntegerConverter("Only numbers are allowed"))
-                .bind("amounOfItems");
+        binder.forField(currentAmountOfItems).withConverter(new StringToIntegerConverter("Only numbers are allowed"))
+                .bind("currentAmountOfItems");
         binder.forField(bailPrice).withConverter(new StringToIntegerConverter("Only numbers are allowed"))
                 .bind("bailPrice");
 
@@ -165,10 +165,10 @@ public class AllBailsView extends Div implements BeforeEnterObserver {
 
         FormLayout formLayout = new FormLayout();
         bailName = new TextField("Bail Name");
-        amounOfItems = new TextField("Amoun Of Items");
+        currentAmountOfItems = new TextField("Current Amount Of Items");
         bailPrice = new TextField("Bail Price");
         dateOfPurchase = new DatePicker("Date Of Purchase");
-        formLayout.add(bailName, amounOfItems, bailPrice, dateOfPurchase);
+        formLayout.add(bailName, currentAmountOfItems, bailPrice, dateOfPurchase);
 
         editorDiv.add(formLayout);
         createButtonLayout(editorLayoutDiv);

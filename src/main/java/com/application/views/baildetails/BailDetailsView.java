@@ -66,13 +66,11 @@ public class BailDetailsView extends Composite<VerticalLayout> implements Before
     private final H5 h5 = new H5();
     private final HorizontalLayout bailGradeHorizontalLayout = new HorizontalLayout();
     private final HorizontalLayout bailGradeDetailsHorizontalLayout = new HorizontalLayout();
-    private final Span badge = new Span();
-    private final NumberField numberField3 = new NumberField();
-    private final NumberField numberField4 = new NumberField();
+    // Removed numberField3 and numberField4 as per user request
     private final HorizontalLayout bailGradeButtonsHorizontalLayout = new HorizontalLayout();
     private final Button buttonPrimary4 = new Button();
-    private final Button buttonPrimary5 = new Button();
-    private final Button buttonPrimary6 = new Button();
+    // Removed buttonPrimary5 (SAVE GRADE) and buttonPrimary6 (DELETE GRADE) as per
+    // user request
     private final HorizontalLayout addBailGradeButtonLayout = new HorizontalLayout();
     private final Button addBailGradeButton = new Button("ADD A GRADE", e -> openGradeForm());
     private final VerticalLayout gradesContainer = new VerticalLayout();
@@ -133,26 +131,8 @@ public class BailDetailsView extends Composite<VerticalLayout> implements Before
         bailGradeDetailsHorizontalLayout.addClassName(Gap.MEDIUM);
         bailGradeDetailsHorizontalLayout.getStyle().set("flex-grow", "1");
         bailGradeDetailsHorizontalLayout.setHeight("flex-grow");
-        badge.getStyle().set("flex-grow", "1");
-        badge.setHeight("flex-grow");
-        badge.getElement().getThemeList().add("badge");
-        numberField3.setLabel("Number of Clothes");
-        numberField3.getStyle().set("flex-grow", "1");
-        numberField4.setLabel("Price Per Cloth");
-        numberField4.getStyle().set("flex-grow", "1");
-        bailGradeButtonsHorizontalLayout.setWidthFull();
-        getContent().setFlexGrow(1.0, bailGradeButtonsHorizontalLayout);
-        bailGradeButtonsHorizontalLayout.addClassName(Gap.MEDIUM);
-        bailGradeButtonsHorizontalLayout.setWidth("100%");
-        bailGradeButtonsHorizontalLayout.setHeight("flex-grow");
-        buttonPrimary4.getStyle().set("flex-grow", "1");
-        buttonPrimary4.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
-        buttonPrimary5.setText("SAVE GRADE");
-        buttonPrimary5.getStyle().set("flex-grow", "1");
-        buttonPrimary5.addThemeVariants(ButtonVariant.LUMO_SUCCESS);
-        buttonPrimary6.setText("DELETE GRADE");
-        buttonPrimary6.getStyle().set("flex-grow", "1");
-        buttonPrimary6.addThemeVariants(ButtonVariant.LUMO_ERROR);
+        // Removed numberField3, numberField4, buttonPrimary5, buttonPrimary6 and
+        // related layout code as per user request
         getContent().add(mainHorizontalLayoutRow);
         progressBar.setValue(50);
         mainHorizontalLayoutRow.add(h3);
@@ -172,14 +152,9 @@ public class BailDetailsView extends Composite<VerticalLayout> implements Before
         getContent().add(h5);
         getContent().add(bailGradeHorizontalLayout);
         bailGradeHorizontalLayout.add(bailGradeDetailsHorizontalLayout);
-        bailGradeDetailsHorizontalLayout.add(badge);
-        bailGradeDetailsHorizontalLayout.add(numberField3);
-        bailGradeDetailsHorizontalLayout.add(numberField4);
         getContent().add(bailGradeButtonsHorizontalLayout);
         bailGradeButtonsHorizontalLayout.add(buttonPrimary4);
-        bailGradeButtonsHorizontalLayout.add(buttonPrimary5);
-        bailGradeButtonsHorizontalLayout.add(buttonPrimary6);
-        addBailGradeButtonLayout.add(addBailGradeButton);
+        
         getContent().add(addBailGradeButtonLayout);
         getContent().add(gradesContainer);
 
@@ -246,9 +221,8 @@ public class BailDetailsView extends Composite<VerticalLayout> implements Before
 
     private void displayBailDetails() {
         // Use the existing UI components instead of creating new ones
-
         // Setting the bail Details below
-        h3.setText("Bail Details: " + bail.getBailName());
+        h3.setText("Bail Details for: " + bail.getBailName());
         textField.setValue(bail.getBailName());
         textField.setReadOnly(true);
 
@@ -276,6 +250,7 @@ public class BailDetailsView extends Composite<VerticalLayout> implements Before
         List<BailGrade> grades = bail.getGrades();
         if (grades == null || grades.isEmpty()) {
             gradesContainer.add(new Span("No grades available for this bail."));
+            addBailGradeButtonLayout.add(addBailGradeButton);
             return;
         }
 
@@ -305,12 +280,11 @@ public class BailDetailsView extends Composite<VerticalLayout> implements Before
 
             // Layout for this grade
             HorizontalLayout gradeLayout = new HorizontalLayout(
-                gradeNumberField,
-                quantityField,
-                pricePerItemField,
-                recordedByField,
-                createdDateField
-            );
+                    gradeNumberField,
+                    quantityField,
+                    pricePerItemField,
+                    recordedByField,
+                    createdDateField);
             gradeLayout.setWidthFull();
 
             // Optionally, add buttons for each grade (edit/delete)

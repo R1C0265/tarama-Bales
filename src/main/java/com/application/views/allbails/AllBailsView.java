@@ -6,6 +6,7 @@ import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import com.application.data.Bail;
 import com.application.services.BailService;
 import com.application.views.MainLayout;
+import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
@@ -86,9 +87,13 @@ public class AllBailsView extends Div implements BeforeEnterObserver {
         grid.asSingleSelect().addValueChangeListener(event -> {
             if (event.getValue() != null) {
                 save.setEnabled(false);
+                splitLayout.setSplitterPosition(70); // 70% primary, 30% secondary
+
                 UI.getCurrent().navigate(String.format(BAIL_EDIT_ROUTE_TEMPLATE, event.getValue().getId()));
             } else {
                 clearForm();
+                splitLayout.setSplitterPosition(100);
+
                 UI.getCurrent().navigate(AllBailsView.class);
             }
         });
@@ -105,7 +110,7 @@ public class AllBailsView extends Div implements BeforeEnterObserver {
         binder.bindInstanceFields(this);
 
         cancel.addClickListener(e -> {
-           
+
             clearForm();
             refreshGrid();
         });
@@ -158,7 +163,7 @@ public class AllBailsView extends Div implements BeforeEnterObserver {
     private void createEditorLayout(SplitLayout splitLayout) {
         Div editorLayoutDiv = new Div();
         editorLayoutDiv.setClassName("editor-layout");
-
+        editorLayoutDiv.setWidth("0px");
         Div editorDiv = new Div();
         editorDiv.setClassName("editor");
         editorLayoutDiv.add(editorDiv);
@@ -174,6 +179,7 @@ public class AllBailsView extends Div implements BeforeEnterObserver {
         createButtonLayout(editorLayoutDiv);
 
         splitLayout.addToSecondary(editorLayoutDiv);
+        splitLayout.setSplitterPosition(100);
     }
 
     private void createButtonLayout(Div editorLayoutDiv) {
@@ -206,7 +212,7 @@ public class AllBailsView extends Div implements BeforeEnterObserver {
     private void clearForm() {
         save.setEnabled(true);
         populateForm(null);
-        
+
     }
 
     private void populateForm(Bail value) {

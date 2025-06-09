@@ -110,7 +110,8 @@ public class BailGradeService {
         BailGrade newGrade = new BailGrade();
         newGrade.setBail(bail);
         newGrade.setGradeNumber(grade.getGradeNumber());
-        newGrade.setQuantity(grade.getQuantity());
+        newGrade.setInitialQuantity(grade.getInitialQuantity());
+        newGrade.setCurrentQuantity(grade.getCurrentQuantity());
         newGrade.setPricePerItem(grade.getPricePerItem());
 
         newGrade.setRecordedBy(SecurityUtils.getLoggedInUsername());

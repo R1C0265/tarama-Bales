@@ -12,7 +12,8 @@ import lombok.Setter;
 public class BailGrade extends AbstractEntity   {
 
     private Integer gradeNumber; // e.g., "A", "B", "C"
-    private Integer quantity; // Number of items in this grade
+    private Integer initialQuantity; // Number of items in this grade
+    private Integer currentQuantity;
     private Integer pricePerItem; // Price per item for this grade
     private String recordedBy;
     private LocalDate createdDate ; // Date when the grade was created
@@ -25,9 +26,9 @@ public class BailGrade extends AbstractEntity   {
 
     @Override
     public String toString() {
-        return "BailGrade [gradeNumber=" + gradeNumber + ", quantity=" + quantity + ", pricePerItem=" + pricePerItem
+        return "BailGrade [gradeNumber=" + gradeNumber + ", initialQuantity=" + initialQuantity + ", pricePerItem=" + pricePerItem
                 + ", bail=" + bail + ", recordedBy=" + recordedBy + ", getId()=" + getId() + ", getVersion()="
-                + getVersion() + ", getGradeNumber()=" + getGradeNumber() + ", getQuantity()=" + getQuantity()
+                + getVersion() + ", getGradeNumber()=" + getGradeNumber() + ", getinitialQuantity()=" + getInitialQuantity() + ", getCurrentQuantity()=" + getCurrentQuantity()
                 + ", getPricePerItem()=" + getPricePerItem() + ", getBail()=" + getBail() + ", getRecordedBy()="
                 + getRecordedBy() + ", getClass()=" + getClass() + ", hashCode()=" + hashCode() + ", toString()="
                 + super.toString() + "]";
@@ -47,10 +48,10 @@ public class BailGrade extends AbstractEntity   {
                 return false;
         } else if (!gradeNumber.equals(other.gradeNumber))
             return false;
-        if (quantity == null) {
-            if (other.quantity != null)
+        if (initialQuantity == null) {
+            if (other.initialQuantity != null)
                 return false;
-        } else if (!quantity.equals(other.quantity))
+        } else if (!initialQuantity.equals(other.initialQuantity))
             return false;
         if (pricePerItem == null) {
             if (other.pricePerItem != null)
@@ -75,20 +76,23 @@ public class BailGrade extends AbstractEntity   {
         final int prime = 31;
         int result = super.hashCode();
         result = prime * result + ((gradeNumber == null) ? 0 : gradeNumber.hashCode());
-        result = prime * result + ((quantity == null) ? 0 : quantity.hashCode());
+        result = prime * result + ((initialQuantity == null) ? 0 : initialQuantity.hashCode());
+        result = prime * result + ((currentQuantity == null) ? 0 : currentQuantity.hashCode());
         result = prime * result + ((pricePerItem == null) ? 0 : pricePerItem.hashCode());
         result = prime * result + ((bail == null) ? 0 : bail.hashCode());
         result = prime * result + ((recordedBy == null) ? 0 : recordedBy.hashCode());
         return result;
     }
 
-    public BailGrade(Integer gradeNumber, Integer quantity, Integer pricePerItem, Bail bail, String recordedBy) {
+    public BailGrade(Integer gradeNumber, Integer initialQuantity, Integer currentQuantity, Integer pricePerItem, Bail bail, String recordedBy) {
         this.gradeNumber = gradeNumber;
-        this.quantity = quantity;
+        this.initialQuantity = initialQuantity;
+        this.currentQuantity = currentQuantity;
         this.pricePerItem = pricePerItem;
         this.bail = bail;
         this.recordedBy = recordedBy;
     }
+
 
     public BailGrade() {
     }
@@ -101,14 +105,20 @@ public class BailGrade extends AbstractEntity   {
         this.gradeNumber = gradeNumber;
     }
 
-    public Integer getQuantity() {
-        return quantity;
+    public Integer getInitialQuantity() {
+        return initialQuantity;
     }
 
-    public void setQuantity(Integer quantity) {
-        this.quantity = quantity;
+    public void setInitialQuantity(Integer initialQuantity) {
+        this.initialQuantity = initialQuantity;
     }
 
+    public Integer getCurrentQuantity() {
+        return currentQuantity;
+    }
+    public void setCurrentQuantity(Integer currentQuantity) {
+        this.currentQuantity = currentQuantity;
+    }
     public Integer getPricePerItem() {
         return pricePerItem;
     }

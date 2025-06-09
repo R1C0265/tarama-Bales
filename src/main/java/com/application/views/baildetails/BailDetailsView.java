@@ -75,9 +75,8 @@ public class BailDetailsView extends Composite<VerticalLayout> implements Before
     private final HorizontalLayout bailGradeButtonsHorizontalLayout = new HorizontalLayout();
 
     private final HorizontalLayout addBailGradeButtonLayout = new HorizontalLayout();
-    private final Button addBailGradeButton = new Button("ADD A GRADE", e -> openGradeForm());
     private final VerticalLayout gradesContainer = new VerticalLayout();
-    private final Button addNewGradeButton = new Button("Add a New Grade", e->{openGradeForm();});
+    private final Button addNewGradeButton = new Button("Create Grade", e->{openGradeForm();});
      
 
     public BailDetailsView(BailService bailService, BailGradeService bailGradeService) {
@@ -92,6 +91,8 @@ public class BailDetailsView extends Composite<VerticalLayout> implements Before
         mainHorizontalLayoutRow.setHeight("flex-grow");
         h3.setText("Bail Details");
         h3.getStyle().set("flex-grow", "1");
+
+        addNewGradeButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
 
         // Create a vertical layout for the title, info, and progress bar
         VerticalLayout titleAndProgressLayout = new VerticalLayout();
@@ -268,7 +269,6 @@ public class BailDetailsView extends Composite<VerticalLayout> implements Before
         List<BailGrade> grades = bail.getGrades();
         if (grades == null || grades.isEmpty()) {
             gradesContainer.add(new Span("No grades available for this bail."));
-            addBailGradeButtonLayout.add(addBailGradeButton) ;
             return;
         }
 
@@ -278,9 +278,13 @@ public class BailDetailsView extends Composite<VerticalLayout> implements Before
             gradeNumberField.setValue(grade.getGradeNumber() != null ? grade.getGradeNumber().toString() : "");
             gradeNumberField.setReadOnly(true);
 
-            TextField quantityField = new TextField("Quantity");
-            quantityField.setValue(grade.getQuantity() != null ? grade.getQuantity().toString() : "");
-            quantityField.setReadOnly(true);
+            TextField initialQuantityField = new TextField("Initial Quantity");
+            initialQuantityField.setValue(grade.getInitialQuantity() != null ? grade.getInitialQuantity().toString() : "");
+            initialQuantityField.setReadOnly(true);
+
+            TextField currentQuantityField = new TextField("Current Quantity");
+            currentQuantityField.setValue(grade.getCurrentQuantity() != null ? grade.getCurrentQuantity().toString() : "");
+            currentQuantityField.setReadOnly(true);
 
             TextField pricePerItemField = new TextField("Price Per Item");
             pricePerItemField.setValue(grade.getPricePerItem() != null ? grade.getPricePerItem().toString() : "");
@@ -299,7 +303,8 @@ public class BailDetailsView extends Composite<VerticalLayout> implements Before
             // Layout for this grade
             HorizontalLayout gradeLayout = new HorizontalLayout(
                     gradeNumberField,
-                    quantityField,
+                    initialQuantityField,
+                    currentQuantityField,
                     pricePerItemField,
                     recordedByField,
                     createdDateField);

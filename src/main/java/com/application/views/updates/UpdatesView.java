@@ -3,7 +3,10 @@ package com.application.views.updates;
 import java.util.Arrays;
 import java.util.List;
 
+import org.springframework.data.domain.Pageable;
+
 import com.application.data.Updates;
+import com.application.services.UpdatesService;
 import com.application.views.MainLayout;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridVariant;
@@ -33,8 +36,10 @@ public class UpdatesView extends Div implements AfterNavigationObserver {
 
     private Grid<Updates> grid = new Grid<>();
     private List<Updates> updates;
+    private final UpdatesService updatesService;
 
-    public UpdatesView() {
+    public UpdatesView(UpdatesService updatesService) {
+        this.updatesService = updatesService;
         addClassName("feed-view");
         setSizeFull();
 
@@ -117,27 +122,27 @@ public class UpdatesView extends Div implements AfterNavigationObserver {
 
     @Override
     public void afterNavigation(AfterNavigationEvent event) {
-        // Set some data when this view is displayed.
-        updates = Arrays.asList(
-            createUpdate("https://randomuser.me/api/portraits/men/42.jpg", "John Smith", "May 8",
-                    "Added a new Bale", "Bale", "MWK 50000"),
-            createUpdate("https://randomuser.me/api/portraits/women/42.jpg", "Abagail Libbie", "May 3",
-                    "Recorded a Sale", "Sale", "MWK 30000")
-            // Add more Updates objects here...
-        );
+        // Fetch all updates from the DB
+        List<Updates> dbUpdates = updatesService.list(Pageable.unpaged()).getContent();
 
-        grid.setItems(updates);
-    }
-
-    private static Updates createUpdate(String image, String recordedBy, String date, String title, String category, String amount) {
-        Updates update = new Updates();
-        update.setImage(image);
-        update.setRecordedBy(recordedBy);
-        update.setDate(date);
-        update.setTitle(title);
-        update.setCategory(category);
-        update.setAmount(amount);
-
-        return update;
+        if (dbUpdates.isEmpty()) {
+            grid.setVisible(false);
+            // Remove any previous "no updates" message
+            this.getChildren()
+                .filter(component -> component instanceof Span && "no-updates".equals(component.getId().orElse("")))
+                .forEach(this::remove);
+            // Add a header
+            Span noUpdates = new Span("No updates available");
+            noUpdates.setId("no-updates");
+            noUpdates.getStyle().set("font-size", "1.2em").set("font-weight", "bold");
+            add(noUpdates);
+        } else {
+            // Remove any previous "no updates" message
+            this.getChildren()
+                .filter(component -> component instanceof Span && "no-updates".equals(component.getId().orElse("")))
+                .forEach(this::remove);
+            grid.setVisible(true);
+            grid.setItems(dbUpdates);
+        }
     }
 }

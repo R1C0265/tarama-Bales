@@ -77,7 +77,7 @@ public class BailDetailsView extends Composite<VerticalLayout> implements Before
     private final HorizontalLayout addBailGradeButtonLayout = new HorizontalLayout();
     private final VerticalLayout gradesContainer = new VerticalLayout();
     private final Button addNewGradeButton = new Button("Create Grade", e->{openGradeForm();});
-     
+
 
     public BailDetailsView(BailService bailService, BailGradeService bailGradeService) {
         this.bailService = bailService;
@@ -298,8 +298,6 @@ public class BailDetailsView extends Composite<VerticalLayout> implements Before
             createdDateField.setValue(grade.getCreatedDate() != null ? grade.getCreatedDate().toString() : "");
             createdDateField.setReadOnly(true);
 
-            // Add more fields as needed
-
             // Layout for this grade
             HorizontalLayout gradeLayout = new HorizontalLayout(
                     gradeNumberField,
@@ -310,10 +308,12 @@ public class BailDetailsView extends Composite<VerticalLayout> implements Before
                     createdDateField);
             gradeLayout.setWidthFull();
 
-            // Optionally, add buttons for each grade (edit/delete)
+            // Edit and Delete buttons for BailGrade
             Button editButton = new Button("Edit");
             Button deleteButton = new Button("Delete");
-            // Add listeners as needed
+
+            editButton.addClickListener(e -> openEditGradeDialog(grade));
+            deleteButton.addClickListener(e -> openDeleteGradeDialog(grade));
 
             HorizontalLayout buttonsLayout = new HorizontalLayout(editButton, deleteButton);
 
@@ -322,10 +322,67 @@ public class BailDetailsView extends Composite<VerticalLayout> implements Before
             gradeRow.setSpacing(false);
 
             gradesContainer.add(gradeRow);
-
         }
+    }
 
+    // Modal for editing a BailGrade
+    private void openEditGradeDialog(BailGrade grade) {
+        Dialog dialog = new Dialog();
+        dialog.setHeaderTitle("Edit Grade");
 
+        TextField gradeNumberField = new TextField("Grade Number", grade.getGradeNumber() != null ? grade.getGradeNumber().toString() : "");
+        TextField initialQuantityField = new TextField("Initial Quantity", grade.getInitialQuantity() != null ? grade.getInitialQuantity().toString() : "");
+        TextField currentQuantityField = new TextField("Current Quantity", grade.getCurrentQuantity() != null ? grade.getCurrentQuantity().toString() : "");
+        TextField pricePerItemField = new TextField("Price Per Item", grade.getPricePerItem() != null ? grade.getPricePerItem().toString() : "");
+        TextField recordedByField = new TextField("Recorded By", grade.getRecordedBy() != null ? grade.getRecordedBy() : "");
+        TextField createdDateField = new TextField("Created Date", grade.getCreatedDate() != null ? grade.getCreatedDate().toString() : "");
+
+        VerticalLayout fieldsLayout = new VerticalLayout(
+                gradeNumberField,
+                initialQuantityField,
+                currentQuantityField,
+                pricePerItemField,
+                recordedByField,
+                createdDateField);
+        fieldsLayout.setPadding(false);
+        fieldsLayout.setSpacing(true);
+
+        Button saveButton = new Button("Save", event -> {
+            // Update the grade entity
+            grade.setGradeNumber(gradeNumberField.getValue().isEmpty() ? null : Integer.valueOf(gradeNumberField.getValue()));
+            grade.setInitialQuantity(initialQuantityField.getValue().isEmpty() ? null : Integer.valueOf(initialQuantityField.getValue()));
+            grade.setCurrentQuantity(currentQuantityField.getValue().isEmpty() ? null : Integer.valueOf(currentQuantityField.getValue()));
+            grade.setPricePerItem(pricePerItemField.getValue().isEmpty() ? null : Integer.valueOf(pricePerItemField.getValue()));
+            grade.setRecordedBy(recordedByField.getValue());
+            // createdDate is not editable here for simplicity
+            bailGradeService.update(grade);
+            Notification.show("Grade updated", 2000, Notification.Position.BOTTOM_START);
+            dialog.close();
+            displayBailGradeDetails();
+        });
+        saveButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+        Button cancelButton = new Button("Cancel", event -> dialog.close());
+        HorizontalLayout buttonsLayout = new HorizontalLayout(saveButton, cancelButton);
+        dialog.add(fieldsLayout, buttonsLayout);
+        dialog.open();
+    }
+
+    // Modal for confirming deletion of a BailGrade
+    private void openDeleteGradeDialog(BailGrade grade) {
+        Dialog dialog = new Dialog();
+        dialog.setHeaderTitle("Confirm Deletion");
+        dialog.add(new Span("Are you sure you want to delete this grade? This action cannot be undone."));
+        Button confirmButton = new Button("Delete", event -> {
+            bailGradeService.delete(grade.getId());
+            Notification.show("Grade deleted", 2000, Notification.Position.BOTTOM_START);
+            dialog.close();
+            displayBailGradeDetails();
+        });
+        confirmButton.addThemeVariants(ButtonVariant.LUMO_ERROR);
+        Button cancelButton = new Button("Cancel", event -> dialog.close());
+        HorizontalLayout buttonsLayout = new HorizontalLayout(confirmButton, cancelButton);
+        dialog.add(buttonsLayout);
+        dialog.open();
     }
 
     private void enableBailEditing() {
@@ -358,10 +415,23 @@ public class BailDetailsView extends Composite<VerticalLayout> implements Before
 
     private void deleteBail() {
         if (bail != null) {
-            bailService.delete(bail.getId());
-            Notification.show("Bail deleted", 2000, Notification.Position.BOTTOM_START);
-            UI.getCurrent().navigate(AllBailsView.class);
+            Dialog dialog = new Dialog();
+            dialog.setHeaderTitle("Confirm Deletion");
+            dialog.add(new Span("Are you sure you want to delete this bail? This action cannot be undone."));
+            Button confirmButton = new Button("Delete", event -> {
+                bailService.delete(bail.getId());
+                Notification.show("Bail deleted", 2000, Notification.Position.BOTTOM_START);
+                dialog.close();
+                UI.getCurrent().navigate(AllBailsView.class);
+            });
+            confirmButton.addThemeVariants(ButtonVariant.LUMO_ERROR);
+            Button cancelButton = new Button("Cancel", event -> dialog.close());
+            HorizontalLayout buttonsLayout = new HorizontalLayout(confirmButton, cancelButton);
+            dialog.add(buttonsLayout);
+            dialog.open();
         }
     }
+
+   
 
 }

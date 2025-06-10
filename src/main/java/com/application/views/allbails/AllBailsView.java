@@ -47,9 +47,13 @@ public class AllBailsView extends Div implements BeforeEnterObserver {
     private TextField currentAmountOfItems;
     private TextField bailPrice;
     private DatePicker dateOfPurchase;
+    private TextField recordedBy;
+    private com.vaadin.flow.component.progressbar.ProgressBar progressBar;
+    private com.vaadin.flow.component.html.Span progressLabel;
+    private com.vaadin.flow.component.html.Span bailGroupsBadge;
 
     private final Button cancel = new Button("Cancel");
-    private final Button save = new Button("Save");
+    private final Button viewBail = new Button("View Bail");
     private final Button delete = new Button("Delete");
 
     private final BeanValidationBinder<Bail> binder;
@@ -72,6 +76,7 @@ public class AllBailsView extends Div implements BeforeEnterObserver {
 
         // Configure Grid
         grid.addColumn("bailName").setAutoWidth(true);
+        grid.addColumn("amountOfItemsAtPurchase").setAutoWidth(true);
         grid.addColumn("currentAmountOfItems").setAutoWidth(true);
         grid.addColumn("bailPrice").setAutoWidth(true);
         grid.addColumn("dateOfPurchase").setAutoWidth(true);
@@ -86,7 +91,7 @@ public class AllBailsView extends Div implements BeforeEnterObserver {
         // when a row is selected or deselected, populate form
         grid.asSingleSelect().addValueChangeListener(event -> {
             if (event.getValue() != null) {
-                save.setEnabled(false);
+                delete.setEnabled(false);
                 splitLayout.setSplitterPosition(70); // 70% primary, 30% secondary
 
                 UI.getCurrent().navigate(String.format(BAIL_EDIT_ROUTE_TEMPLATE, event.getValue().getId()));
@@ -108,6 +113,7 @@ public class AllBailsView extends Div implements BeforeEnterObserver {
                 .bind("bailPrice");
 
         binder.bindInstanceFields(this);
+        binder.forField(recordedBy).bind(Bail::getRecordedBy, Bail::setRecordedBy);
 
         cancel.addClickListener(e -> {
 
@@ -119,26 +125,32 @@ public class AllBailsView extends Div implements BeforeEnterObserver {
             delete();
             refreshGrid();
         });
-
-        save.addClickListener(e -> {
-            try {
-                if (this.bail == null) {
-                    this.bail = new Bail();
-                }
-                binder.writeBean(this.bail);
-                bailService.update(this.bail);
-                clearForm();
-                refreshGrid();
-                Notification.show("Data updated");
-                UI.getCurrent().navigate(AllBailsView.class);
-            } catch (ObjectOptimisticLockingFailureException exception) {
-                Notification n = Notification.show(
-                        "Error updating the data. Somebody else has updated the record while you were making changes.");
-                n.setPosition(Position.MIDDLE);
-                n.addThemeVariants(NotificationVariant.LUMO_ERROR);
-            } catch (ValidationException validationException) {
-                Notification.show("Failed to save the bail. Check again that all values are valid");
-            }
+        /*
+         * viewBail.addClickListener(e -> {
+         * try {
+         * if (this.bail == null) {
+         * this.bail = new Bail();
+         * }
+         * binder.writeBean(this.bail);
+         * bailService.update(this.bail);
+         * clearForm();
+         * refreshGrid();
+         * Notification.show("Data updated");
+         * UI.getCurrent().navigate(AllBailsView.class);
+         * } catch (ObjectOptimisticLockingFailureException exception) {
+         * Notification n = Notification.show(
+         * "Error updating the data. Somebody else has updated the record while you were making changes."
+         * );
+         * n.setPosition(Position.MIDDLE);
+         * n.addThemeVariants(NotificationVariant.LUMO_ERROR);
+         * } catch (ValidationException validationException) {
+         * Notification.
+         * show("Failed to viewBail the bail. Check again that all values are valid");
+         * }
+         * });
+         */
+        viewBail.addClickListener(e -> {
+            UI.getCurrent().navigate(String.format("bail-details/%s", bail.getId()));
         });
     }
 
@@ -173,9 +185,31 @@ public class AllBailsView extends Div implements BeforeEnterObserver {
         currentAmountOfItems = new TextField("Current Amount Of Items");
         bailPrice = new TextField("Bail Price");
         dateOfPurchase = new DatePicker("Date Of Purchase");
-        formLayout.add(bailName, currentAmountOfItems, bailPrice, dateOfPurchase);
+        recordedBy = new TextField("Recorded By");
+        formLayout.add(bailName, currentAmountOfItems, bailPrice, dateOfPurchase, recordedBy);
 
-        editorDiv.add(formLayout);
+        // Progress Bar Section
+        progressLabel = new com.vaadin.flow.component.html.Span("Progress to Completion");
+        progressLabel.getElement().getStyle().set("font-weight", "bold");
+        progressBar = new com.vaadin.flow.component.progressbar.ProgressBar();
+        progressBar.setMin(0);
+        progressBar.setMax(1);
+        progressBar.setValue(0);
+        progressBar.setWidth("100%");
+
+        // Bail Groups Section
+        com.vaadin.flow.component.html.H6 groupsHeader = new com.vaadin.flow.component.html.H6("Bail Groups");
+        bailGroupsBadge = new com.vaadin.flow.component.html.Span("0");
+        bailGroupsBadge.getElement().getThemeList().add("badge primary");
+        bailGroupsBadge.getElement().getStyle().set("margin-bottom", "1em");
+
+        // Layout for progress and groups
+        Div progressDiv = new Div(progressLabel, progressBar);
+        progressDiv.getStyle().set("margin-bottom", "1em");
+        Div groupsDiv = new Div(groupsHeader, bailGroupsBadge);
+        groupsDiv.getStyle().set("margin-bottom", "1em");
+
+        editorDiv.add(formLayout, progressDiv, groupsDiv);
         createButtonLayout(editorLayoutDiv);
 
         splitLayout.addToSecondary(editorLayoutDiv);
@@ -186,9 +220,9 @@ public class AllBailsView extends Div implements BeforeEnterObserver {
         HorizontalLayout buttonLayout = new HorizontalLayout();
         buttonLayout.setClassName("button-layout");
         cancel.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
-        save.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+        viewBail.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
         delete.addThemeVariants(ButtonVariant.LUMO_ERROR);
-        buttonLayout.add(save, cancel, delete);
+        buttonLayout.add(viewBail, cancel, delete);
         editorLayoutDiv.add(buttonLayout);
     }
 
@@ -200,7 +234,7 @@ public class AllBailsView extends Div implements BeforeEnterObserver {
     }
 
     private void refreshGrid() {
-        save.setVisible(true);
+        viewBail.setVisible(true);
         grid.select(null);
         grid.getDataProvider().refreshAll();
     }
@@ -210,7 +244,7 @@ public class AllBailsView extends Div implements BeforeEnterObserver {
     }
 
     private void clearForm() {
-        save.setEnabled(true);
+        viewBail.setEnabled(true);
         populateForm(null);
 
     }
@@ -219,13 +253,28 @@ public class AllBailsView extends Div implements BeforeEnterObserver {
         this.bail = value;
         binder.readBean(this.bail);
 
+        // Update progress bar
+        if (value != null && value.getamountOfItemsAtPurchase() != null && value.getamountOfItemsAtPurchase() > 0
+                && value.getCurrentAmountOfItems() != null) {
+            double progress = value.getCurrentAmountOfItems() / (double) value.getamountOfItemsAtPurchase();
+            progressBar.setValue(Math.max(0, Math.min(1, progress)));
+        } else {
+            progressBar.setValue(0);
+        }
+
+        // Update badge for BailGroups
+        if (value != null && value.getGrades() != null) {
+            bailGroupsBadge.setText(String.valueOf(value.getGrades().size()));
+        } else {
+            bailGroupsBadge.setText("0");
+        }
     }
 
     private void configureGridContextMenu() {
         GridContextMenu<Bail> contextMenu = new GridContextMenu<>(grid);
 
         // Add "Edit" option
-        contextMenu.addItem("Edit", event -> {
+        contextMenu.addItem("Details", event -> {
             event.getItem().ifPresent(bail -> {
                 // Handle the "Edit" action
                 UI.getCurrent().navigate(String.format(BAIL_EDIT_ROUTE_TEMPLATE, bail.getId()));
@@ -233,7 +282,7 @@ public class AllBailsView extends Div implements BeforeEnterObserver {
         });
 
         // Add "Details" option
-        contextMenu.addItem("Details", event -> {
+        contextMenu.addItem("View All", event -> {
             event.getItem().ifPresent(bail -> {
                 // Handle the "Details" action
                 UI.getCurrent().navigate("bail-details/" + bail.getId());

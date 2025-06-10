@@ -40,8 +40,14 @@ public class BailGradeService {
         return (int) bailGradeRepository.count();
     }
 
+
     public List<BailGrade> listAllBails() {
         return bailGradeRepository.findAll();
+    }
+
+    @Transactional
+    public void delete(Long id){
+        bailGradeRepository.deleteById(id);
     }
     /*
      * @Transactional
@@ -64,28 +70,29 @@ public class BailGradeService {
      * }
      */
 
-    /*
-     * @Transactional
-     * public Bail update(Bail bail) {
-     * boolean isNew = (bail.getId() == null); // Check if this is a new Bail
-     * if (bail.getRecordedBy() == null || bail.getRecordedBy().isEmpty()) {
-     * bail.setRecordedBy(SecurityUtils.getLoggedInUsername());
-     * }
-     * Bail savedBail = bailGradeRepository.save(bail);
-     * 
-     * Updates update = new Updates();
-     * // Add an update entry if this is a new Bail
-     * if (isNew) {
-     * update.setTitle("Added a new Bale");
-     * update.setCategory("Bale Added");
-     * update.setDate(LocalDate.now().toString());
-     * update.setAmount("MWK " + bail.getBailPrice());
-     * updatesRepository.save(update);
-     * }
-     * 
-     * return savedBail;
-     * }
-     */
+    
+      @Transactional
+      public BailGrade update(BailGrade bailGrade) {
+    /*   boolean isNew = (bail.getId() == null); // Check if this is a new Bail
+      if (bail.getRecordedBy() == null || bail.getRecordedBy().isEmpty()) {
+      bail.setRecordedBy(SecurityUtils.getLoggedInUsername());
+      }
+      Bail savedBail = bailGradeRepository.save(bail);
+      
+      Updates update = new Updates();
+      // Add an update entry if this is a new Bail
+      if (isNew) {
+      update.setTitle("Added a new Bale");
+      update.setCategory("Bale Added");
+      update.setDate(LocalDate.now().toString());
+      update.setAmount("MWK " + bail.getBailPrice());
+      updatesRepository.save(update);
+      }
+      
+      return savedBail; */
+      return null;
+      }
+    
 
     /*
      * @Transactional

@@ -14,12 +14,14 @@ import com.vaadin.flow.component.datepicker.DatePicker;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridVariant;
+import com.vaadin.flow.component.grid.HeaderRow;
 import com.vaadin.flow.component.grid.contextmenu.GridContextMenu;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.notification.Notification.Position;
 import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
+import com.vaadin.flow.component.progressbar.ProgressBar;
 import com.vaadin.flow.component.splitlayout.SplitLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.BeanValidationBinder;
@@ -63,6 +65,25 @@ public class AllBailsView extends Div implements BeforeEnterObserver {
     private final BailService bailService;
 
     public AllBailsView(BailService bailService) {
+
+        // Add modern features: multi-sort, column reordering, row highlighting, and
+        // export button
+        grid.setMultiSort(true);
+        grid.setColumnReorderingAllowed(true);
+        grid.addThemeVariants(GridVariant.LUMO_ROW_STRIPES, GridVariant.LUMO_COMPACT);
+
+        // Add a toolbar with an export button and a refresh button
+        HorizontalLayout toolbar = new HorizontalLayout();
+        toolbar.setWidthFull();
+        toolbar.setSpacing(true);
+        toolbar.setPadding(true);
+
+        Button exportButton = new Button("Export CSV", e -> exportGridToCsv());
+        exportButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+        Button refreshButton = new Button("Refresh", e -> refreshGrid());
+        refreshButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
+        toolbar.add(exportButton, refreshButton);
+        add(toolbar);
         this.bailService = bailService;
         addClassNames("all-bails-view");
 
@@ -75,11 +96,34 @@ public class AllBailsView extends Div implements BeforeEnterObserver {
         add(splitLayout);
 
         // Configure Grid
-        grid.addColumn("bailName").setAutoWidth(true);
-        grid.addColumn("amountOfItemsAtPurchase").setAutoWidth(true);
-        grid.addColumn("currentAmountOfItems").setAutoWidth(true);
-        grid.addColumn("bailPrice").setAutoWidth(true);
-        grid.addColumn("dateOfPurchase").setAutoWidth(true);
+        grid.addColumn("bailName").setHeader("Bail Name").setAutoWidth(true);
+        grid.addColumn("amountOfItemsAtPurchase").setHeader("Initial Amount").setAutoWidth(true);
+        grid.addColumn("currentAmountOfItems").setHeader("Current Amount").setAutoWidth(true);
+        grid.addColumn("bailPrice").setHeader("Bail Price").setAutoWidth(true);
+        grid.addColumn("dateOfPurchase").setHeader("Date Of Purchase").setAutoWidth(true);
+
+        // --- Modern grid filters ---
+        HeaderRow filterRow = grid.appendHeaderRow();
+
+        // Name filter
+        TextField nameFilter = new TextField();
+        nameFilter.setPlaceholder("Filter by name");
+        nameFilter.setClearButtonVisible(true);
+        nameFilter.setWidthFull();
+        filterRow.getCell(grid.getColumnByKey("bailName")).setComponent(nameFilter);
+
+        // Date of purchase filter
+        DatePicker dateFilter = new DatePicker();
+        dateFilter.setPlaceholder("Filter by date");
+        dateFilter.setClearButtonVisible(true);
+        dateFilter.setWidthFull();
+        filterRow.getCell(grid.getColumnByKey("dateOfPurchase")).setComponent(dateFilter);
+
+        // Filtering logic
+        nameFilter.addValueChangeListener(e -> applyGridFilters(nameFilter.getValue(), dateFilter.getValue()));
+        dateFilter.addValueChangeListener(e -> applyGridFilters(nameFilter.getValue(), dateFilter.getValue()));
+
+        // Filtering logic for the grid
         grid.setItems(query -> bailService.list(
                 PageRequest.of(query.getPage(), query.getPageSize(), VaadinSpringDataHelpers.toSpringDataSort(query)))
                 .stream());
@@ -154,6 +198,16 @@ public class AllBailsView extends Div implements BeforeEnterObserver {
         });
     }
 
+    private void applyGridFilters(String name, java.time.LocalDate date) {
+        grid.setItems(query -> bailService.list(
+                PageRequest.of(query.getPage(), query.getPageSize(), VaadinSpringDataHelpers.toSpringDataSort(query)))
+                .stream()
+                .filter(bail -> (name == null || name.isEmpty()
+                        || (bail.getBailName() != null
+                                && bail.getBailName().toLowerCase().contains(name.toLowerCase())))
+                        && (date == null || date.equals(bail.getDateOfPurchase()))));
+    }
+
     @Override
     public void beforeEnter(BeforeEnterEvent event) {
         Optional<Long> bailId = event.getRouteParameters().get(BAIL_ID).map(Long::parseLong);
@@ -191,7 +245,7 @@ public class AllBailsView extends Div implements BeforeEnterObserver {
         // Progress Bar Section
         progressLabel = new com.vaadin.flow.component.html.Span("Progress to Completion");
         progressLabel.getElement().getStyle().set("font-weight", "bold");
-        progressBar = new com.vaadin.flow.component.progressbar.ProgressBar();
+        progressBar = new ProgressBar();
         progressBar.setMin(0);
         progressBar.setMax(1);
         progressBar.setValue(0);
@@ -231,6 +285,27 @@ public class AllBailsView extends Div implements BeforeEnterObserver {
         wrapper.setClassName("grid-wrapper");
         splitLayout.addToPrimary(wrapper);
         wrapper.add(grid);
+        grid.setWidthFull();
+        grid.setHeight("600px");
+        // Export grid data to CSV (basic, client-side)
+
+    }
+
+    private void exportGridToCsv() {
+        StringBuilder csv = new StringBuilder();
+        csv.append("Bail Name,Initial Amount,Current Amount,Bail Price,Date Of Purchase\n");
+        grid.getDataProvider().fetch(new com.vaadin.flow.data.provider.Query<>()).forEach(bail -> {
+            csv.append(String.format("%s,%s,%s,%s,%s\n",
+                    bail.getBailName(),
+                    bail.getamountOfItemsAtPurchase(),
+                    bail.getCurrentAmountOfItems(),
+                    bail.getBailPrice(),
+                    bail.getDateOfPurchase() != null ? bail.getDateOfPurchase().toString() : ""));
+        });
+        com.vaadin.flow.component.page.Page page = UI.getCurrent().getPage();
+        String base64 = java.util.Base64.getEncoder().encodeToString(csv.toString().getBytes());
+        page.executeJs("var a = document.createElement('a');a.href='data:text/csv;base64," + base64
+                + "';a.download='bails.csv';a.click();");
     }
 
     private void refreshGrid() {
